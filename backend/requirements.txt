@@ -1,0 +1,11 @@
+fastapi[standart]
+pydantic
+sqlalchemy
+fastapi-users
+fastapi-users-db-sqlalchemy
+python-dotenv
+asyncpg
+alembic
+psycopg2-binary
+uvicorn
+
