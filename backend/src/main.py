@@ -6,6 +6,7 @@ from auth.schemas import UserCreate,UserRead
 
 from fastapi.middleware.cors import CORSMiddleware
 from api.user_router import router as user_router
+from api.resume_router import router as resume_router
 
 
 
@@ -56,6 +57,7 @@ app.include_router(
 
 
 app.include_router(user_router)
+app.include_router(resume_router)
 
 
 
