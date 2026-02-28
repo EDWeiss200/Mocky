@@ -8,7 +8,7 @@ import io
 class ResumeServices:
 
     def __init__(self,resume_repo: AbstractRepository) -> None:
-        self.user_repo = resume_repo()
+        self.resume_repo = resume_repo()
 
     async def upload_resume(self,file: File,user):
 
@@ -51,3 +51,24 @@ class ResumeServices:
         
         finally:
             await file.close()
+
+    async def get_resume_by_id(self,resume_id):
+
+        filters = [
+            self.resume_repo.model.id == resume_id
+        ]
+
+        resume = await self.resume_repo.find_filter_drm(filters)
+
+        return resume
+
+    async def get_resume(self,resume_id,user_id):
+
+        filters = [
+            self.resume_repo.model.id == resume_id,
+            self.resume_repo.model.user_id == user_id
+        ]
+
+        resume = await self.resume_repo.find_filter_drm(filters)
+
+        return resume

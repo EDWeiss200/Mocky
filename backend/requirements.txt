@@ -8,4 +8,6 @@ asyncpg
 alembic
 psycopg2-binary
 uvicorn
+openai
+PyPDF2
 

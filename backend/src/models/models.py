@@ -1,6 +1,6 @@
 from typing import Annotated, List, Optional
 from datetime import datetime, timezone  # <--- Ключевое исправление здесь!
-from enum import Enum
+from models.enum import SessionStatus,MessageRole
 
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
 from sqlalchemy import Boolean, ForeignKey, Integer, String, Text, MetaData
@@ -34,16 +34,6 @@ class User(SQLAlchemyBaseUserTable[int], Base):
             email=self.email,
         )
 
-
-class SessionStatus(str, Enum):
-    PLANNED = "planned"
-    ACTIVE = "active"
-    COMPLETED = "completed"
-
-class MessageRole(str, Enum):
-    SYSTEM = "system"
-    ASSISTANT = "assistant"
-    USER = "user"
 
 
 class Resume(Base):

@@ -49,6 +49,17 @@ class SQLAlchemyRepository(AbstractRepository):
             await session.commit()
             return res.scalar_one()
     
+    async def add_one_without_commit(self, data : dict) -> int:
+        async with async_session_maker() as session:
+            stmt = (
+                insert(self.model).
+                values(**data).
+                returning(self.model.id)
+            )
+            res = await session.execute(stmt)
+            await session.flush()
+            return res.scalar_one()
+    
 
 
     async def find_all(self):
@@ -97,6 +108,14 @@ class SQLAlchemyRepository(AbstractRepository):
             res = [row[0].to_read_model() for row in res.all()]
             return res
 
+    async def find_filter_drm(self,filters: list):
+        async with async_session_maker() as session:
+            stmt =(
+                select(self.model).filter(*filters)
+            )
+            res = await session.execute(stmt)
+            res = res.scalar_one_or_none()
+            return res
     
         
     

@@ -1,4 +1,4 @@
-from services.user_services import UserServices
+from services.resume_services import ResumeServices
 from models.models import User,Resume
 from schemas.schemas import UserReadSchema
 from api.dependencies import resume_service
@@ -17,7 +17,7 @@ router = APIRouter(
 async def upload_resume(
     file: UploadFile = File(...),
     user: User = Depends(current_user),
-    resume_service: UserServices = Depends(resume_service)
+    resume_service: ResumeServices = Depends(resume_service)
 ):
 
     res = await resume_service.upload_resume(file,user)
