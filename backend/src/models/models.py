@@ -61,6 +61,8 @@ class Interview(Base):
     resume: Mapped["Resume"] = relationship(back_populates="interviews")
     messages: Mapped[List["Message"]] = relationship(back_populates="interview", cascade="all, delete-orphan")
 
+
+
 class Message(Base):
     __tablename__ = "messages"
     id: Mapped[intpk]

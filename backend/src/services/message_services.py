@@ -20,5 +20,24 @@ class MessageServices:
         message_id = await self.message_repo.add_one(message)
 
         return message_id
+    
+    async def get_messages_inteview(self,interview_id):
 
+        filters = [
+            self.message_repo.model.interview_id == interview_id
+        ]
+
+        messages = await self.message_repo.find_filter(filters)
+
+        return messages
+    
+    async def get_interview_history(self, interview_id: int):
+
+        filters = [
+            self.message_repo.model.interview_id == interview_id
+        ]
+        
+        messages = await self.message_repo.find_filter(filters) 
+        return messages
+    
         

@@ -96,7 +96,14 @@ class SQLAlchemyRepository(AbstractRepository):
             await session.commit()
             return res.scalar_one()
 
-
+    async def find_id(self,id):
+        async with async_session_maker() as session:
+            stmt = (
+                select(self.model).
+                where(self.model.id == id)
+            )
+            res = await session.execute(stmt)
+            return res.scalar_one()
 
 
     async def find_filter(self,filters: list):
@@ -105,8 +112,7 @@ class SQLAlchemyRepository(AbstractRepository):
                 select(self.model).filter(*filters)
             )
             res = await session.execute(stmt)
-            res = [row[0].to_read_model() for row in res.all()]
-            return res
+            return res.scalars()
 
     async def find_filter_drm(self,filters: list):
         async with async_session_maker() as session:

@@ -54,11 +54,9 @@ class ResumeServices:
 
     async def get_resume_by_id(self,resume_id):
 
-        filters = [
-            self.resume_repo.model.id == resume_id
-        ]
 
-        resume = await self.resume_repo.find_filter_drm(filters)
+
+        resume = await self.resume_repo.find_id(resume_id)
 
         return resume
 
@@ -72,3 +70,20 @@ class ResumeServices:
         resume = await self.resume_repo.find_filter_drm(filters)
 
         return resume
+    
+
+    async def delete_resume(self,resume_id):
+
+        id = await self.resume_repo.delete_one(resume_id)
+
+        return id
+    
+    async def get_all_resume_user(self,user_id):
+
+        filters = [
+            self.resume_repo.model.user_id == user_id
+        ]
+
+        resumes = await self.resume_repo.find_filter(filters)
+
+        return resumes

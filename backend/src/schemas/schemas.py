@@ -76,3 +76,9 @@ class StartInterviewRequest(BaseModel):
     resume_id: int
     
     model_config = ConfigDict(alias_generator=to_camel, populate_by_name=True)
+
+
+class AnswerRequest(BaseModel):
+    answer_text: str
+    
+    model_config = ConfigDict(alias_generator=to_camel, populate_by_name=True)
