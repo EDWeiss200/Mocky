@@ -109,19 +109,21 @@ class SQLAlchemyRepository(AbstractRepository):
     async def find_filter(self,filters: list):
         async with async_session_maker() as session:
             stmt =(
-                select(self.model).filter(*filters)
+                select(self.model).filter(*filters).order_by(self.model.id.asc())
             )
             res = await session.execute(stmt)
-            return res.scalars()
+            return res.scalars().all()
 
     async def find_filter_drm(self,filters: list):
         async with async_session_maker() as session:
             stmt =(
                 select(self.model).filter(*filters)
+
             )
             res = await session.execute(stmt)
             res = res.scalar_one_or_none()
             return res
+
     
         
     

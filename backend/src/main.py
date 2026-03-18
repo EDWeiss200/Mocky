@@ -62,7 +62,5 @@ app.include_router(resume_router)
 app.include_router(interview_router)
 
 
-
-
-
-uvicorn.run(app)
+if __name__ == "__main__":
+    uvicorn.run("main:app", host="0.0.0.0", port=8000, reload=True)

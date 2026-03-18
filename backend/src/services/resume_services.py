@@ -35,7 +35,7 @@ class ResumeServices:
                 'raw_text':extracted_text.strip()
             }
             
-            res = await self.user_repo.add_one(new_resume)
+            res = await self.resume_repo.add_one(new_resume)
 
             # возвращаем camelCase ответ для реакта
             return {

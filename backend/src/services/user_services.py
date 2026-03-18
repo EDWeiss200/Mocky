@@ -12,7 +12,7 @@ class UserServices:
             self.user_repo.model.id == user_id
         ]
 
-        user = await self.user_repo.find_filter(filters)
+        user = await self.user_repo.find_filter_drm(filters)
 
         
 
