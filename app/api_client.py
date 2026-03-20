@@ -12,17 +12,39 @@ class Backend_Client():
             
             # Делаем POST-запрос на эндпоинт Answer Question
             async with session.post(f"{self.base_url}/interviews/answer/{interview_id}", json=payload) as response:
-                # Ждем, пока бэкенд ответит и превращаем ответ в словарь (dict)
                 result = await response.json()
-                # Возвращаем только текст ответа от нейронки/бэкенда
                 return result.get("answer", "Ошибка: Бэкенд не прислал ответ")
 
-    async def link_account(self, user_id: int, code: str):
-        """Метод для привязки кода с сайта к Telegram ID"""
-        async with aiohttp.ClientSession() as session:
-            payload = {"user_id": user_id, "code": code}
+    # async def link_account(self, user_id: int, code: str):
+    #     """Метод для привязки кода с сайта к Telegram ID"""
+    #     async with aiohttp.ClientSession() as session:
+    #         payload = {"user_id": user_id, "code": code}
             
-            async with session.post(f"{self.base_url}/auth/link", json=payload) as response:
+    #         async with session.post(f"{self.base_url}/auth/link", json=payload) as response:
+    #             if response.status == 200:
+    #                 return True
+    #             return False
+
+    # Функция загрузки резюме, работает только после связки аккаунтов
+    async def resume_upload(self, file_bytes : bytes, file_name : str):
+        async with aiohttp.ClientSession() as session:
+                data = aiohttp.FormData()
+                data.add_field('file', file_bytes, filename=file_name)
+
+                url = f"{self.base_url}/resumes/upload"
+                async with session.post(url, data=data) as response:
+                    if response.status == 200:
+                        result = await response.json()
+                    return result.get("id") 
+                return None
+
+    # Функция старта интервью
+    async def start_interview(self, resume_id: str):
+        async with aiohttp.ClientSession() as session:
+            url = f"{self.base_url}/interviews/start"
+            payload = {"resumeId": resume_id} # Как на твоем скриншоте
+            
+            async with session.post(url, json=payload) as response:
                 if response.status == 200:
-                    return True
-                return False
+                    return await response.json()
+                return None
