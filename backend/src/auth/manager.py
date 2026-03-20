@@ -10,7 +10,7 @@ from .database import User_Now as User, get_user_db
 SECRET = SECRET_USER_MANAGER
 
 
-class UserManager(IntegerIDMixin, BaseUserManager[User, uuid.UUID]):
+class UserManager(UUIDIDMixin, BaseUserManager[User, uuid.UUID]):
     reset_password_token_secret = SECRET
     verification_token_secret = SECRET
 

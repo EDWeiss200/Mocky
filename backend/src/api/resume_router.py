@@ -13,7 +13,7 @@ router = APIRouter(
     prefix='/resumes'
 )
 
-@router.post('upload')
+@router.post('/upload')
 async def upload_resume(
     file: UploadFile = File(...),
     user: User = Depends(current_user),

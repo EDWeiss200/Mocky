@@ -109,7 +109,7 @@ class SQLAlchemyRepository(AbstractRepository):
     async def find_filter(self,filters: list):
         async with async_session_maker() as session:
             stmt =(
-                select(self.model).filter(*filters).order_by(self.model.id.asc())
+                select(self.model).filter(*filters).order_by(self.model.created_at.asc())
             )
             res = await session.execute(stmt)
             return res.scalars().all()

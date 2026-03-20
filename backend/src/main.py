@@ -8,11 +8,12 @@ from fastapi.middleware.cors import CORSMiddleware
 from api.user_router import router as user_router
 from api.resume_router import router as resume_router
 from api.interview_router import router as interview_router
+from api.message_router import router as message_router
 
 
 
 app = FastAPI(
-    title='Robert',
+    title='Mocky',
 )
 
 
@@ -60,6 +61,7 @@ app.include_router(
 app.include_router(user_router)
 app.include_router(resume_router)
 app.include_router(interview_router)
+app.include_router(message_router)
 
 
 if __name__ == "__main__":

@@ -10,15 +10,13 @@ class InterviewServices:
     def __init__(self,interview_repo: AbstractRepository) -> None:
         self.interview_repo = interview_repo()
 
-    async def get_interview_by_id(self,interview_id):
+    async def get_interview(self,interview_id):
 
         filters = [
             self.interview_repo.model.id == interview_id
         ]
 
         interview= await self.interview_repo.find_filter_drm(filters)
-
-        
 
         return interview
     
@@ -68,12 +66,7 @@ class InterviewServices:
     
 
     
-    async def get_interview_id(self,interview_id):
 
-        interview = await self.interview_repo.find_filter(interview_id)
-
-        return interview
-    
 
     async def answer(self, resume: Resume, message_history):
 
@@ -267,3 +260,26 @@ class InterviewServices:
         
         return score,feedback
 
+
+    async def get_interview_user_all(self,user_id):
+
+        filters = [
+            self.interview_repo.model.user_id == user_id
+        ]
+
+        interviews = await self.interview_repo.find_filter(filters)
+
+        return interviews
+    
+
+
+    async def get_interview_user_status(self,user_id, status: SessionStatus):
+
+        filters = [
+            self.interview_repo.model.user_id == user_id,
+            self.interview_repo.model.status == status
+        ]
+
+        interviews = await self.interview_repo.find_filter(filters)
+
+        return interviews

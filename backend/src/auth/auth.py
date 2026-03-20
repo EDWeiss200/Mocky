@@ -8,14 +8,12 @@ import fastapi_users
 from fastapi_users.password import PasswordHelper
 from pwdlib import PasswordHash, exceptions
 from pwdlib.hashers.argon2 import Argon2Hasher
+import uuid
 
 
 
 
-
-
-
-cookie_transport = CookieTransport(cookie_name="robert-cookie",cookie_max_age=28800,cookie_secure=True,cookie_samesite='None')
+cookie_transport = CookieTransport(cookie_name="mocky-cookie",cookie_max_age=28800,cookie_secure=True,cookie_samesite='None')
 
 
 
@@ -31,7 +29,7 @@ auth_backend = AuthenticationBackend(
     get_strategy=get_jwt_strategy,
 )
 
-fastapi_users = FastAPIUsers[User, int](
+fastapi_users = FastAPIUsers[User, uuid.UUID](
     get_user_manager,
     [auth_backend],
 )

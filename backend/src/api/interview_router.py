@@ -49,7 +49,7 @@ async def answer_question(
 
     MAX_QUESTIONS = 3
 
-    interview = await interview_service.get_interview_by_id(interview_id)
+    interview = await interview_service.get_interview(interview_id)
     if not interview or interview.user_id!=user.id:
         raise HTTPException(status_code=404,detail="Интервью не найдено")
     
@@ -93,7 +93,7 @@ async def finish_interview(
     interview_service: InterviewServices = Depends(interview_service),
     message_service: MessageServices = Depends(message_service)
 ):
-    interwiew = await interview_service.get_interview_by_id(interview_id)
+    interwiew = await interview_service.get_interview(interview_id)
     if not interview_service or interwiew.user_id != user.id:
         raise HTTPException(status_code=404,detail="Интервью не найдено")
     
@@ -112,6 +112,39 @@ async def finish_interview(
         "totalScore": score,
         "feedback": feedback
     }
+
+
+@router.get("/")
+async def get_interviews_user(
+    user: User = Depends(current_user),
+    interview_service: InterviewServices = Depends(interview_service)
+):
+    
+    interviews = await interview_service.get_interview_user_all(user.id)
+
+    return interviews
+
+
+@router.get("/completed")
+async def get_interviews_user(
+    user: User = Depends(current_user),
+    interview_service: InterviewServices = Depends(interview_service)
+):
+    
+    interviews = await interview_service.get_interview_user_status(user.id,SessionStatus.COMPLETED)
+
+    return interviews
+
+
+@router.get("/active")
+async def get_interviews_user(
+    user: User = Depends(current_user),
+    interview_service: InterviewServices = Depends(interview_service)
+):
+    
+    interviews = await interview_service.get_interview_user_status(user.id,SessionStatus.ACTIVE)
+
+    return interviews
 
     
 

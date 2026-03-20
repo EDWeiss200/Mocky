@@ -6,12 +6,13 @@ from datetime import datetime
 from pydantic import BaseModel, ConfigDict, EmailStr
 from datetime import datetime
 from typing import List, Optional
+from uuid import UUID
 
 
 
 
-class UserRead(schemas.BaseUser[int]):
-    id: int 
+class UserRead(schemas.BaseUser[uuid.UUID]):
+    id: UUID
     username : str
     email: EmailStr
     is_active: Optional[bool] = True

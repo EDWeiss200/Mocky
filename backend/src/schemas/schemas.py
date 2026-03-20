@@ -11,8 +11,10 @@ from pydantic import BaseModel, ConfigDict
 from pydantic.alias_generators import to_camel
 from models.enum import SessionStatus,MessageRole
 
+from uuid import UUID
+
 class UserReadSchema(BaseModel):
-    id: int
+    id: UUID
     username: str
     email: EmailStr
 
@@ -23,7 +25,7 @@ class UserReadSchema(BaseModel):
 
 # --- Схемы для Message ---
 class MessageBase(BaseModel):
-    interview_id: int
+    interview_id: UUID
     role: MessageRole
     content: str
 
@@ -31,7 +33,7 @@ class MessageCreate(MessageBase):
     pass
 
 class MessageRead(MessageBase):
-    id: int
+    id: UUID
     interview_id: int
     created_at: datetime
     
@@ -45,7 +47,7 @@ class ResumeCreate(ResumeBase):
     pass
 
 class ResumeRead(ResumeBase):
-    id: int
+    id: UUID
     user_id: int
     created_at: datetime
     
@@ -57,12 +59,12 @@ class InterviewBase(BaseModel):
     total_score: Optional[int] = None
 
 class InterviewCreate(InterviewBase):
-    user_id:int
+    user_id: UUID
     resume_id: int
 
 
 class InterviewRead(InterviewBase):
-    id: int
+    id: UUID
     user_id: int
     resume_id: int
     created_at: datetime
@@ -73,7 +75,7 @@ class InterviewRead(InterviewBase):
 
 
 class StartInterviewRequest(BaseModel):
-    resume_id: int
+    resume_id: UUID
     
     model_config = ConfigDict(alias_generator=to_camel, populate_by_name=True)
 
