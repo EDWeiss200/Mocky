@@ -10,4 +10,5 @@ psycopg2-binary
 uvicorn
 openai
 PyPDF2
-
+redis
+fastapi-cache2[redis]

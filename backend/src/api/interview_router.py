@@ -8,6 +8,8 @@ from api.dependencies import resume_service
 from api.dependencies import message_service
 from auth.auth import current_user
 from fastapi import APIRouter, Depends, UploadFile, File, HTTPException
+from user_router import user_key_builder
+from fastapi_cache.decorator import cache
 
 
 
@@ -115,6 +117,7 @@ async def finish_interview(
 
 
 @router.get("/")
+@cache(expire=60, key_builder=user_key_builder)
 async def get_interviews_user(
     user: User = Depends(current_user),
     interview_service: InterviewServices = Depends(interview_service)
@@ -126,6 +129,7 @@ async def get_interviews_user(
 
 
 @router.get("/completed")
+@cache(expire=60, key_builder=user_key_builder)
 async def get_interviews_user(
     user: User = Depends(current_user),
     interview_service: InterviewServices = Depends(interview_service)
@@ -137,6 +141,7 @@ async def get_interviews_user(
 
 
 @router.get("/active")
+@cache(expire=60, key_builder=user_key_builder)
 async def get_interviews_user(
     user: User = Depends(current_user),
     interview_service: InterviewServices = Depends(interview_service)

@@ -23,6 +23,8 @@ class UserReadSchema(BaseModel):
 
 
 
+
+
 # --- Схемы для Message ---
 class MessageBase(BaseModel):
     interview_id: UUID
@@ -84,3 +86,12 @@ class AnswerRequest(BaseModel):
     answer_text: str
     
     model_config = ConfigDict(alias_generator=to_camel, populate_by_name=True)
+
+
+class TelegramLoginSchema(BaseModel):
+    telegram_id: int
+    username: str
+
+class TelegramLinkRequest(BaseModel):
+    telegram_id: int
+    token: str

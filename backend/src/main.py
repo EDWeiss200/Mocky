@@ -9,11 +9,26 @@ from api.user_router import router as user_router
 from api.resume_router import router as resume_router
 from api.interview_router import router as interview_router
 from api.message_router import router as message_router
+from api.telegram_router import router as telegram_router
 
+from contextlib import asynccontextmanager
 
+from fastapi_cache import FastAPICache
+from fastapi_cache.backends.redis import RedisBackend
+from redis import asyncio as aioredis
+
+from config import REDIS_URL_CACHE
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+
+    redis = aioredis.from_url(REDIS_URL_CACHE, encoding="utf8", decode_responses=True)
+    FastAPICache.init(RedisBackend(redis), prefix="mocky-cache")
+    yield
 
 app = FastAPI(
     title='Mocky',
+    lifespan=lifespan
 )
 
 
@@ -62,6 +77,7 @@ app.include_router(user_router)
 app.include_router(resume_router)
 app.include_router(interview_router)
 app.include_router(message_router)
+app.include_router(telegram_router)
 
 
 if __name__ == "__main__":

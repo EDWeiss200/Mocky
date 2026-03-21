@@ -16,9 +16,19 @@ SECRET_USER_MANAGER = os.environ.get("SECRET_USER_MANAGER")
 
 OPENAI_SECRET_API_KEY = os.environ.get("OPENAI_SECRET_API_KEY")
 
+BOT_SECRET_TOKEN = os.environ.get("BOT_SECRET_TOKEN")
+
 DATABASE_URL_CONFIG = f"postgresql+asyncpg://{DB_USER}:{DB_PASS}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
 
 client = AsyncOpenAI(
     base_url="https://api.proxyapi.ru/openai/v1", # адрес посредника
     api_key=OPENAI_SECRET_API_KEY,
 )
+
+REDIS_HOST = os.environ.get("REDIS_HOST")
+REDIS_PORT = os.environ.get("REDIS_PORT")
+
+REDIS_URL_TGTOKEN = f"redis://{REDIS_HOST}:{REDIS_PORT}/1"
+REDIS_URL_CACHE = f"redis://{REDIS_HOST}:{REDIS_PORT}/0"
+
+BOT_NAME = os.environ.get("BOT_NAME")

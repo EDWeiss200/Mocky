@@ -10,6 +10,8 @@ from repositories.interview_repo import InterviewRepository
 from services.message_services import MessageServices
 from repositories.message_repo import MessageRepository
 
+from services.telegram_services import TelegramService
+
 
 
 def user_service() -> UserServices:
@@ -23,3 +25,8 @@ def interview_service() -> InterviewServices:
 
 def message_service() -> MessageServices:
     return MessageServices(MessageRepository)
+
+def telegram_service() -> TelegramService:
+    return TelegramService()
+
+

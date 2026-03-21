@@ -23,6 +23,7 @@ class UserCreate(schemas.BaseUserCreate):
     email: EmailStr
     password: str
     username : str
+    telegram_id: Optional[int] = None
     is_active: Optional[bool] = True
     is_superuser: Optional[bool] = False
     is_verified: Optional[bool] = False
