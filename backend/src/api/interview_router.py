@@ -8,7 +8,7 @@ from api.dependencies import resume_service
 from api.dependencies import message_service
 from auth.auth import current_user
 from fastapi import APIRouter, Depends, UploadFile, File, HTTPException
-from user_router import user_key_builder
+from api.user_router import user_key_builder
 from fastapi_cache.decorator import cache
 
 
