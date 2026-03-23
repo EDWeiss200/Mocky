@@ -62,13 +62,13 @@ class InterviewBase(BaseModel):
 
 class InterviewCreate(InterviewBase):
     user_id: UUID
-    resume_id: int
+    resume_id: UUID
 
 
 class InterviewRead(InterviewBase):
     id: UUID
     user_id: int
-    resume_id: int
+    resume_id: UUID
     created_at: datetime
     # Если захочешь отдавать интервью сразу с сообщениями:
     # messages: List[MessageRead] = []

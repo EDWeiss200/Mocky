@@ -9,7 +9,7 @@ from api.dependencies import message_service
 from auth.auth import current_user
 from fastapi import APIRouter, Depends, UploadFile, File, HTTPException
 from fastapi_cache.decorator import cache
-
+from uuid import UUID
 
 
 router = APIRouter(
@@ -22,7 +22,7 @@ router = APIRouter(
 @router.get("/{interview_id}/history")
 @cache(expire=60)
 async def get_interview_messages(
-    interview_id: int,
+    interview_id: UUID,
     user: User = Depends(current_user),
     message_service: MessageServices = Depends(message_service),
     interview_service: InterviewServices = Depends(interview_service)

@@ -7,7 +7,9 @@ from fastapi_users.db import SQLAlchemyBaseUserTable, SQLAlchemyUserDatabase
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
 from sqlalchemy.orm import DeclarativeBase,relationship
 from config import DATABASE_URL_CONFIG
-from models.models import User as User_Base
+from models.models import User as User_Base,OAuthAccount
+import random
+
 
 DATABASE_URL = DATABASE_URL_CONFIG
 
@@ -32,4 +34,21 @@ async def get_async_session() -> AsyncGenerator[AsyncSession, None]:
 
 
 async def get_user_db(session: AsyncSession = Depends(get_async_session)):
-    yield SQLAlchemyUserDatabase(session, User_Now)
+    yield CustomUserDatabase(session, User_Now, OAuthAccount)
+
+
+
+
+class CustomUserDatabase(SQLAlchemyUserDatabase):
+    async def create(self, create_dict: dict):
+        
+        if "username" not in create_dict:
+            
+            email = create_dict.get("email", "user")
+            base_name = email.split("@")[0]
+            
+            
+            create_dict["username"] = f"{base_name}_{random.randint(1000, 9999)}"
+            
+
+        return await super().create(create_dict)

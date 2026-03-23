@@ -65,6 +65,24 @@ class InterviewServices:
         return interview_id,first_question
     
 
+    async def test_start_interview(self, resume: Resume,user_id):
+        if not resume:
+            raise HTTPException(status_code=404, detail="Резюме не найдено")
+
+        # создаем новую сессию собеседования
+        interview = InterviewCreate(
+            user_id=user_id, 
+            resume_id=resume.id, 
+            status=SessionStatus.ACTIVE
+        )
+
+        interview = interview.model_dump()
+
+        interview_id = await self.interview_repo.add_one(interview)
+
+        first_question = "START INTERVIEW TEST MESSGAGE"
+        
+        return interview_id,first_question
     
 
 
@@ -119,6 +137,13 @@ class InterviewServices:
         return ai_reply
     
 
+    async def test_answer(self, resume: Resume, message_history):
+
+        ai_reply = "TEST ANSWER MESSAGE"
+        
+        return ai_reply
+    
+
 
 
     async def answer_finish(self, resume: Resume, message_history):
@@ -160,8 +185,7 @@ class InterviewServices:
 
             )
             ai_reply = response.choices[0].message.content
-            print(f"Сырой текст от ИИ -> {ai_reply}") # выведи в консоль, чтобы увидеть врага в лицо
-            
+
             # вычищаем возможную markdown-разметку
             cleaned_reply = ai_reply.replace("```json", "").replace("```", "").strip()
             
@@ -183,7 +207,19 @@ class InterviewServices:
             print(f"Ошибка API: {e}")
             raise HTTPException(status_code=500, detail="Ошибка при обращении к ИИ")
         
-        return [ai_reply,score,feedback]
+        return score,feedback
+    
+
+
+    async def test_answer_finish(self, resume: Resume, message_history):
+
+
+
+        score = 50
+
+        feedback = "TEST FINISH FEEDBACK. MAX QUESTIONS"
+        
+        return score,feedback
     
 
 
@@ -232,7 +268,7 @@ class InterviewServices:
 
             )
             ai_reply = response.choices[0].message.content
-            print(f"Сырой текст от ИИ -> {ai_reply}") # выведи в консоль, чтобы увидеть врага в лицо
+
             
             # вычищаем возможную markdown-разметку
             cleaned_reply = ai_reply.replace("```json", "").replace("```", "").strip()
@@ -257,6 +293,15 @@ class InterviewServices:
         except Exception as e:
             print(f"Ошибка API: {e}")
             raise HTTPException(status_code=500, detail="Ошибка при подведении итогов")
+        
+        return score,feedback
+    
+
+    async def test_get_score_interview(self,history):
+
+        score = 50
+
+        feedback = "TEST FINISH FEEDBACK. Forced termination"
         
         return score,feedback
 

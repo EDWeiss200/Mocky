@@ -3,13 +3,15 @@ from fastapi_users import FastAPIUsers
 from .manager import get_user_manager
 from .database import User_Now as User
 from fastapi_users.authentication import JWTStrategy
-from config import SECRET_AUTH
+from config import SECRET_AUTH, GITHUB_CLIENT_ID, GITHUB_CLIENT_SECRET
+
 import fastapi_users
 from fastapi_users.password import PasswordHelper
 from pwdlib import PasswordHash, exceptions
 from pwdlib.hashers.argon2 import Argon2Hasher
 import uuid
 
+from httpx_oauth.clients.github import GitHubOAuth2
 
 
 
@@ -34,10 +36,19 @@ fastapi_users = FastAPIUsers[User, uuid.UUID](
     [auth_backend],
 )
 
+github_oauth_client = GitHubOAuth2(
+    GITHUB_CLIENT_ID, 
+    GITHUB_CLIENT_SECRET
+)
+
 
 password_hash = PasswordHash((
     Argon2Hasher(),
 ))
 password_helper = PasswordHelper(password_hash)
 current_user = fastapi_users.current_user()
+
+
+
+# Инициализируем клиент
 

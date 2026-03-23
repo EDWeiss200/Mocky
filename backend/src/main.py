@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 import uvicorn
 
-from auth.auth import auth_backend,fastapi_users
+from auth.auth import auth_backend,fastapi_users,github_oauth_client
 from auth.schemas import UserCreate,UserRead
 
 from fastapi.middleware.cors import CORSMiddleware
@@ -17,7 +17,7 @@ from fastapi_cache import FastAPICache
 from fastapi_cache.backends.redis import RedisBackend
 from redis import asyncio as aioredis
 
-from config import REDIS_URL_CACHE
+from config import REDIS_URL_CACHE,SECRET_AUTH
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -69,6 +69,18 @@ app.include_router(
 app.include_router(
     fastapi_users.get_register_router(UserRead, UserCreate),
     prefix="/auth",
+    tags=["auth"],
+)
+
+app.include_router(
+    fastapi_users.get_oauth_router(
+        github_oauth_client,
+        auth_backend,
+        SECRET_AUTH, # Твой секрет для JWT из конфига
+        associate_by_email=True, # МАГИЯ: если email в GitHub совпадет с email в нашей БД, аккаунты склеятся автоматически!
+        is_verified_by_default=True # GitHub уже проверил почту за нас, доверяем ему
+    ),
+    prefix="/auth/github",
     tags=["auth"],
 )
 

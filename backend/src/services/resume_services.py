@@ -54,7 +54,12 @@ class ResumeServices:
 
     async def get_resume_by_id(self,resume_id):
 
+        resume = await self.resume_repo.find_id(resume_id)
 
+        return resume
+    
+
+    async def get_resume_by_id(self,resume_id):
 
         resume = await self.resume_repo.find_id(resume_id)
 
@@ -78,7 +83,7 @@ class ResumeServices:
 
         return id
     
-    async def get_all_resume_user(self,user_id):
+    async def get_resumes_user(self,user_id):
 
         filters = [
             self.resume_repo.model.user_id == user_id
@@ -87,3 +92,5 @@ class ResumeServices:
         resumes = await self.resume_repo.find_filter(filters)
 
         return resumes
+    
+

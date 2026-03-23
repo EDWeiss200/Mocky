@@ -6,7 +6,7 @@ from models.enum import SessionStatus,MessageRole
 
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
 from sqlalchemy import Boolean, ForeignKey, Integer, String, Text, MetaData
-from fastapi_users.db import SQLAlchemyBaseUserTable,SQLAlchemyBaseUserTableUUID
+from fastapi_users.db import SQLAlchemyBaseUserTableUUID,SQLAlchemyBaseOAuthAccountTableUUID
 from schemas.schemas import UserReadSchema
 
 from sqlalchemy import Uuid
@@ -24,6 +24,13 @@ msk_tz = timezone(timedelta(hours=3), name="MSK")
 class Base(DeclarativeBase):
     pass
 
+class OAuthAccount(SQLAlchemyBaseOAuthAccountTableUUID, Base):
+    user_id: Mapped[uuid.UUID] = mapped_column(
+        ForeignKey("users.id", ondelete="cascade"), 
+        nullable=False
+    )
+
+
 class User(SQLAlchemyBaseUserTableUUID, Base):
     __tablename__ = "users"
     id: Mapped[uuidpk]
@@ -31,6 +38,9 @@ class User(SQLAlchemyBaseUserTableUUID, Base):
     email: Mapped[str] = mapped_column(nullable=False)
     telegram_id: Mapped[Optional[int]] = mapped_column(unique=True)
     hashed_password: Mapped[str] = mapped_column(String(length=1024), nullable=False)
+    oauth_accounts: Mapped[List[OAuthAccount]] = relationship(
+        "OAuthAccount", lazy="joined", cascade="all, delete-orphan"
+    )
     is_active: Mapped[bool] = mapped_column(Boolean, default=True, nullable=False)
     is_superuser: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
     is_verified: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
@@ -84,3 +94,5 @@ class Message(Base):
     default=lambda: datetime.now(msk_tz).replace(tzinfo=None)
     )
     interview: Mapped["Interview"] = relationship(back_populates="messages")
+
+
