@@ -48,3 +48,21 @@ class Backend_Client():
                 if response.status == 200:
                     return await response.json()
                 return None
+
+    # Логин(создание нового акка в бд на основе тг акка)
+    async def login(self, telegram_id: int, username: str):
+        async with aiohttp.ClientSession() as session:
+            url = f"{self.base_url}/telegram/login"
+            headers = {
+                "x-bot-token" : "BOT_SECRET_TOKEN",
+                "ContentType" : "application/json"
+            }
+            payload = {
+                "telegram_id" : telegram_id,
+                "username" : username
+            }
+            
+            async with session.post(url, json=payload, headers=headers) as response:
+                if response.status == 200:
+                    return await response.json()
+                return None
