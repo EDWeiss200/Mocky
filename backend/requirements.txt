@@ -13,3 +13,4 @@ PyPDF2
 redis
 fastapi-cache2[redis]
 httpx-oauth
+jinja2
