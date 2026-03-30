@@ -7,16 +7,15 @@ services:
 
   backend:
     build: ./backend
-    # сначала переходим в src, затем накатываем миграции и стартуем
+
     command: bash -c 'while !</dev/tcp/db/5432; do sleep 1; done; cd src && alembic upgrade head && uvicorn main:app --host 0.0.0.0 --port 8000'
     volumes:
-      # монтируем только папку backend в рабочую директорию контейнера /app
+
       - ./backend:/app
     ports:
-      # снаружи 8008, внутри 8000
       - "8008:8000"
     environment:
-      # добавил драйвер +asyncpg
+
       - DATABASE_URL=postgresql+asyncpg://postgres:12345@db:5432/edweissth
     depends_on:
       - db

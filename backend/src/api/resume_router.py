@@ -19,17 +19,26 @@ async def upload_resume(
     user: User = Depends(current_user),
     resume_service: ResumeServices = Depends(resume_service)
 ):
+    ALLOWED_EXTENSIONS = {"pdf"}
+    file_ext = file.filename.split(".")[-1].lower()
+    if file_ext not in ALLOWED_EXTENSIONS:
+        raise HTTPException(
+            status_code=400, 
+            detail=f"Неподдерживаемый формат. Разрешены: {', '.join(ALLOWED_EXTENSIONS)}"
+        )
 
     res = await resume_service.upload_resume(file,user)
     return res
 
 
 @router.get('')
-@cache(expire=60)
+#@cache(expire=60)
 async def get_resumes_user(
     user: User = Depends(current_user),
     resume_service: ResumeServices = Depends(resume_service)
 ):
+    
+
     resumes = await resume_service.get_resumes_user(user.id)
 
     return resumes

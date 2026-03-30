@@ -20,7 +20,7 @@ router = APIRouter(
 
 
 @router.get("/{interview_id}/history")
-@cache(expire=60)
+#@cache(expire=60)
 async def get_interview_messages(
     interview_id: UUID,
     user: User = Depends(current_user),

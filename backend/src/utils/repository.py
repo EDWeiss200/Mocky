@@ -121,7 +121,7 @@ class SQLAlchemyRepository(AbstractRepository):
 
             )
             res = await session.execute(stmt)
-            res = res.scalar_one_or_none()
+            res = res.unique().scalar_one_or_none()
             return res
 
     

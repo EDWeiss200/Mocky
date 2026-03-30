@@ -40,6 +40,12 @@ async def start_interview(
     }
 
 
+
+
+
+
+    
+
 @router.post('/answer/{interview_id}')
 async def answer_question(
     interview_id: UUID,
@@ -85,6 +91,77 @@ async def answer_question(
         }
 
 
+
+
+
+@router.post('/answer/voice/{interview_id}')
+async def answer_question_voice(
+    interview_id: UUID,
+    file: UploadFile = File(...), 
+    user: User = Depends(current_user),
+    interview_service: InterviewServices = Depends(interview_service),
+    resume_service: ResumeServices = Depends(resume_service),
+    message_service: MessageServices = Depends(message_service)
+):
+
+    MAX_QUESTIONS = 5
+    MAX_FILE_SIZE = 25 * 1024 * 1024 #25mb в байтах
+    ALLOWED_EXTENSIONS = {"mp3", "mp4", "mpeg", "mpga", "m4a", "wav", "webm"}
+
+    if not file.filename:
+        raise HTTPException(status_code=400, detail="Файл не имеет имени")  
+    
+    file_ext = file.filename.split(".")[-1].lower()
+    if file_ext not in ALLOWED_EXTENSIONS:
+        raise HTTPException(
+            status_code=400, 
+            detail=f"Неподдерживаемый формат. Разрешены: {', '.join(ALLOWED_EXTENSIONS)}"
+        )
+    
+    file_bytes = await file.read()
+
+    if len(file_bytes) > MAX_FILE_SIZE:
+        raise HTTPException(
+            status_code=400,
+            detail="Файл слишком большой. Максимальный размер: 25 МБ"
+        )
+    
+    audio_data = (file.filename, file_bytes)
+
+    transcription = await interview_service.transcribe(audio_data)
+
+    interview = await interview_service.get_interview(interview_id)
+    if not interview or interview.user_id!=user.id:
+        raise HTTPException(status_code=404,detail="Интервью не найдено")
+    
+    message_id = await message_service.add_message(interview_id,MessageRole.USER,transcription)
+
+    message_history = await message_service.get_interview_history(interview_id)
+    resume = await resume_service.get_resume(interview.resume_id,user.id)
+
+    user_answers_count = sum(1 for msg in message_history if msg.role == MessageRole.USER)
+    if user_answers_count < MAX_QUESTIONS:
+
+        ai_reply = await interview_service.answer(resume,message_history)
+        message_id = await message_service.add_message(interview_id,MessageRole.ASSISTANT,ai_reply)
+        return {
+            "reply": ai_reply,
+            "messageId": message_id
+        }
+    
+    else:
+
+        score,feedback = await interview_service.answer_finish(resume,message_history)
+
+        await interview_service.finish_interview(interview_id, score)
+        await message_service.add_message(interview_id, MessageRole.ASSISTANT, feedback)
+
+        return {
+            "status": "completed", 
+            "score": score, 
+            "feedback": feedback
+        }
+
         
 
 
@@ -118,7 +195,7 @@ async def finish_interview(
 
 
 @router.get("/")
-@cache(expire=60, key_builder=user_key_builder)
+#@cache(expire=60, key_builder=user_key_builder)
 async def get_interviews_user(
     user: User = Depends(current_user),
     interview_service: InterviewServices = Depends(interview_service)
@@ -130,7 +207,7 @@ async def get_interviews_user(
 
 
 @router.get("/completed")
-@cache(expire=60, key_builder=user_key_builder)
+#@cache(expire=60, key_builder=user_key_builder)
 async def get_interviews_user(
     user: User = Depends(current_user),
     interview_service: InterviewServices = Depends(interview_service)
@@ -142,7 +219,7 @@ async def get_interviews_user(
 
 
 @router.get("/active")
-@cache(expire=60, key_builder=user_key_builder)
+#@cache(expire=60, key_builder=user_key_builder)
 async def get_interviews_user(
     user: User = Depends(current_user),
     interview_service: InterviewServices = Depends(interview_service)

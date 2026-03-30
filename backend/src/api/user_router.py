@@ -27,7 +27,7 @@ router = APIRouter(
 
 
 @router.get('')
-@cache(expire=60, key_builder=user_key_builder)
+#@cache(expire=60, key_builder=user_key_builder)
 async def get_info_user(
     user: User = Depends(current_user),
     user_service: UserServices = Depends(user_service)
