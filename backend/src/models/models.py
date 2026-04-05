@@ -36,7 +36,7 @@ class User(SQLAlchemyBaseUserTableUUID, Base):
     id: Mapped[uuidpk]
     username: Mapped[str] = mapped_column(nullable=False)
     email: Mapped[str] = mapped_column(nullable=False)
-    telegram_id: Mapped[Optional[int]] = mapped_column(unique=True)
+    telegram_id: Mapped[Optional[str]] = mapped_column(unique=True)
     hashed_password: Mapped[str] = mapped_column(String(length=1024), nullable=False)
     oauth_accounts: Mapped[List[OAuthAccount]] = relationship(
         "OAuthAccount", lazy="joined", cascade="all, delete-orphan"

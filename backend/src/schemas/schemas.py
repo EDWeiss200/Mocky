@@ -89,9 +89,9 @@ class AnswerRequest(BaseModel):
 
 
 class TelegramLoginSchema(BaseModel):
-    telegram_id: int
+    telegram_id: str
     username: str
 
 class TelegramLinkRequest(BaseModel):
-    telegram_id: int
+    telegram_id: str
     token: str
