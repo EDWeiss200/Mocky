@@ -2,6 +2,7 @@ import asyncio
 import logging
 from config import config
 from aiogram import Bot, Dispatcher
+from aiogram.types import BotCommand, BotCommandScopeDefault
 from handlers import router
 from api_client import Backend_Client
 from aiogram.fsm.storage.redis import RedisStorage
@@ -19,6 +20,9 @@ async def main():
         print('redis cookie connected')
 
     bot = Bot(token = config.BOT_TOKEN)
+
+    await set_commands(bot)
+
     dp = Dispatcher(storage=storage)
     
     api = Backend_Client(base_url=config.BACKEND_URL, redis_client = redis_cookie)
@@ -34,6 +38,17 @@ async def main():
         print("session closing...")
         await api.close()
         await bot.session.close()
+
+
+async def set_commands(bot: Bot):
+    commands = [
+        BotCommand(command="start", description="🏠 На главную"),
+        BotCommand(command="resumes", description="📂 Мои резюме"),
+        BotCommand(command="active", description="⚡️ Активные сессии"),
+        BotCommand(command="completed", description="📋 Мои интервью"),
+        BotCommand(command="pause", description="⏸ Принудительная пауза"),
+    ]
+    await bot.set_my_commands(commands, BotCommandScopeDefault())
 
 
 if __name__ == "__main__":

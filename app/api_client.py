@@ -1,6 +1,5 @@
 from config import config
 import aiohttp
-import json
 from redis.asyncio import Redis
 
 class Backend_Client():
@@ -27,7 +26,6 @@ class Backend_Client():
     async def login(self, telegram_id: int, username: str):
         url = f"{self.base_url}/telegram/login"
         
-        # Данные из твоего скриншота Swagger
         headers = {
             "x-bot-token": config.BOT_SECRET_TOKEN, # Берем из конфига
             "Content-Type": "application/json"
@@ -46,20 +44,39 @@ class Backend_Client():
             print(f"Ошибка логина {response.status}: {await response.text()}")
             return False
 
-
-
-    async def send_message(self, user_id: int, answerText: str, interview_id: int):
-        url = f"{self.base_url}/interviews/answer/{interview_id}"
-        headers = await self._get_auth_headers(user_id)
+    async def confirm_link(self, telegram_id: int, token: str):
+        url = f"{self.base_url}/telegram/link/confirm"
         
+        headers = {
+            "x-bot-token": config.BOT_SECRET_TOKEN,
+            "Content-Type": "application/json"
+        }
+        
+        payload = {
+            "telegram_id": int(telegram_id),
+            "token": token
+        }
+
+        async with self.session.post(url, json=payload, headers=headers) as response:
+            if response.status in [200, 204]:
+                set_cookie = response.headers.get("Set-Cookie")
+                if set_cookie:
+                    clean_cookie = set_cookie.split(';')[0]
+                    await self.redis.set(f"auth_sid:{telegram_id}", clean_cookie, ex=86400)
+                return True
+            print(f"Ошибка связки: {response.status}")
+            return False
+
+    async def send_message(self, user_id: int, answerText: str, interview_id: str):
+        url = f"{self.base_url}/interviews/TEST/answer/{interview_id}"
         payload = {"answerText": answerText}
+        headers = await self._get_auth_headers(user_id) 
         
         async with self.session.post(url, json=payload, headers=headers) as response:
             if response.status == 200:
-                result = await response.json()
-                return result.get("answer", "Бэкенд не прислал текст ответа")
-            return "Ошибка: Не удалось получить ответ от интервьюера"
-            
+                return await response.json() 
+            return None
+                        
 
     # Функция загрузки резюме, работает только после связки аккаунтов
     async def resume_upload(self, user_id: int, file_bytes: bytes, file_name: str):
@@ -70,8 +87,6 @@ class Backend_Client():
         async with self.session.post(f"{self.base_url}/resumes/upload", data=data, headers=headers) as response:
             if response.status in [200, 201]:
                 result = await response.json()
-                # Бэк возвращает словарь, вытаскиваем из него чистый UUID
-                # Если в JSON ключ называется "resumeId", берем его
                 resume_id = result.get("resumeId") 
                 return resume_id
             return None
@@ -86,11 +101,60 @@ class Backend_Client():
             if response.status == 200:
                 data = await response.json()
                 print(f"DEBUG Start Interview Response: {data}")
-                # Сверяемся со скриншотом: ключи interviewId и firstQuestion
                 return {
                     "id": data.get("interviewId"),
                     "text": data.get("firstQuestion")
                 }
             return None
         
-    
+    async def finish_interview(self, telegram_id: int, interview_id: str):
+        url = f"{self.base_url}/interviews/TEST/finish/{interview_id}"
+        headers = await self._get_auth_headers(telegram_id)
+        
+        async with self.session.post(url, headers=headers) as response:
+            if response.status == 200:
+                data = await response.json()
+                return {
+                    "status": data.get("status"),
+                    "totalScore": data.get("total_score", 0),
+                    "feedback": data.get("feedback", "Анализ не сформирован")
+                }
+            print(f"Ошибка API finish: {response.status}")
+            return None
+        
+        
+    async def get_active_interviews(self, telegram_id: int):
+        """Получить список активных интервью (Эндпоинт /interviews/active)"""
+        url = f"{self.base_url}/interviews/active"
+        headers = await self._get_auth_headers(telegram_id)
+        async with self.session.get(url, headers=headers) as response:
+            if response.status == 200:
+                return await response.json()
+            return []
+
+    async def get_resumes(self, telegram_id: int):
+            """Эндпоинт GET /resumes"""
+            url = f"{self.base_url}/resumes"
+            headers = await self._get_auth_headers(telegram_id)
+            async with self.session.get(url, headers=headers) as resp:
+                if resp.status == 200:
+                    return await resp.json()
+                return []
+
+    async def get_interview_history(self, telegram_id: int, interview_id: str):
+        """Эндпоинт GET /messages/{interview_id}/history"""
+        url = f"{self.base_url}/messages/{interview_id}/history"
+        headers = await self._get_auth_headers(telegram_id)
+        async with self.session.get(url, headers=headers) as resp:
+            if resp.status == 200:
+                return await resp.json()
+            return []
+
+    async def get_completed_interview_details(self, telegram_id: int):
+        url = f"{self.base_url}/interviews/completed"
+        headers = await self._get_auth_headers(telegram_id)
+        
+        async with self.session.get(url, headers=headers) as response:
+            if response.status == 200:
+                return await response.json()
+            return []
