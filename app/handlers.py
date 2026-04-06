@@ -1,4 +1,4 @@
-from datetime import datetime
+import datetime
 from aiogram import Router, types, F, Bot
 from aiogram.filters import Command, CommandObject
 from aiogram.fsm.context import FSMContext
@@ -6,7 +6,7 @@ from aiogram.fsm.state import StatesGroup, State
 from aiogram.types import ReplyKeyboardMarkup, KeyboardButton, InlineKeyboardButton
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 from aiogram.enums import ChatAction
-
+from aiogram.utils.chat_action import ChatActionSender  
 
 class InterviewProcess(StatesGroup):
     waiting_for_resume = State() 
@@ -98,7 +98,7 @@ async def show_my_resumes(message: types.Message, api, state: FSMContext):
     builder.adjust(2)
     
     await message.answer(
-        text + "\nНажмите на кнопку с номером, чтобы выбрать резюме для интервью.",
+        text + "\nНажмите на кнопку с номером, чтобы выбрать резюме для интервью или загрузите новое в формате PDF",
         parse_mode="Markdown",
         reply_markup=builder.as_markup()
     )
@@ -165,10 +165,21 @@ async def cmd_finish_interview(message: types.Message, api, state: FSMContext):
     telegram_id = message.from_user.id
     
     if not interview_id:
-        return await message.answer("Активная сессия не найдена в памяти бота.")
+        await state.clear()
+        return await message.answer("❌ Активное интервью не найдено.", reply_markup=get_main_menu())
 
-    result = await api.finish_interview(telegram_id, interview_id)
-    
+
+    async with ChatActionSender.typing(bot=message.bot, chat_id=message.chat.id):
+        try:
+            result = await api.finish_interview(telegram_id, interview_id)
+
+            
+        except Exception as e:
+            print(f"Ошибка при остановке: {e}")
+            return await message.answer("⚠️ Произошла ошибка при сохранении результатов.")
+
+    await state.clear()
+
     if result:
         score = result.get("totalScore", 0)
         feedback = result.get("feedback", "Анализ не доступен")
@@ -182,7 +193,7 @@ async def cmd_finish_interview(message: types.Message, api, state: FSMContext):
         await message.answer(text, parse_mode="Markdown", reply_markup=get_main_menu(False))
         await state.clear()
     else:
-        await message.answer("❌ **Ошибка:** Бэкенд не смог завершить интервью. Возможно, сессия уже закрыта или сервер недоступен.")
+        await message.answer("❌ Ошибка: Возможно, сессия уже закрыта или сервер недоступен.")
 
 
 @router.callback_query(F.data.startswith("finish_"))
@@ -269,7 +280,8 @@ async def resume_with_context(callback: types.CallbackQuery, api, state: FSMCont
                 icon = "👤"
             
             content = msg.get('content') or msg.get('text') or "..."
-            text += f"{icon}: {content}\n"
+            text += f"{icon}: {content}\n\n"
+            text += "────────────────────\n"
 
     await state.set_state(InterviewProcess.interviewing)
     await state.update_data(interview_id=i_id)
@@ -498,13 +510,16 @@ async def handle_interview_answer(message: types.Message, state: FSMContext, api
     answer_count = user_data.get("answer_count", 0)
     total_questions = 5
 
-    await message.bot.send_chat_action(chat_id=message.chat.id, action=ChatAction.TYPING)
-    
-    response = await api.send_message(
-        user_id=message.from_user.id,
-        answerText=message.text,
-        interview_id=interview_id
-    )
+    async with ChatActionSender.typing(bot=message.bot, chat_id=message.chat.id):
+        try:
+            response = await api.send_message(
+                user_id=message.from_user.id,
+                answerText=message.text,
+                interview_id=interview_id
+            )
+        except Exception as e:
+            print(f"Ошибка API: {e}")
+            return await message.answer("❌ Ошибка связи с сервером.")
 
     if not response:
         return await message.answer("❌ Ошибка связи с сервером.")
@@ -545,18 +560,31 @@ async def cmd_prepare_interview(message: types.Message, state: FSMContext, api):
     resume_id = user_data.get("resume_id")
 
     if not resume_id:
-        return await message.answer("⚠️ Резюме не выбрано.")
+        return await message.answer(
+            "⚠️ **Резюме не выбрано.**\n"
+            "Сначала выберите резюме в разделе '📂 Мои резюме' или пришлите новый PDF файл.",
+            parse_mode="Markdown"
+        )
 
-    interview_data = await api.start_interview(message.from_user.id, resume_id)
-    if interview_data:
-        await state.update_data(interview_id=interview_data.get("id"), current_step=0)
+
+    async with ChatActionSender.typing(bot=message.bot, chat_id=message.chat.id):
+        interview_data = await api.start_interview(message.from_user.id, resume_id)
+    
+    if interview_data and interview_data.get("id"):
         await state.set_state(InterviewProcess.interviewing)
+        await state.update_data(
+            interview_id=interview_data.get("id"),
+            answer_count=0
+        )
         
         await message.answer(
-            f"🚀 **Интервью началось!**\n\n**Вопрос 1 из 5:**\n{interview_data.get('text')}",
+            f"🚀 **Интервью началось!**\n\n"
+            f"**Вопрос 1 из 5:**\n\n{interview_data.get('text')}",
             parse_mode="Markdown",
             reply_markup=get_main_menu(is_interviewing=True)
         )
+    else:
+        await message.answer("❌ Ошибка при создании сессии. Проверьте соединение с сервером.")
 
 async def start_actual_interview(message, state, api, resume_id):
     data = await state.get_data()
