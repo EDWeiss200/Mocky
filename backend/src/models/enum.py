@@ -11,3 +11,7 @@ class MessageRole(str, Enum):
     ASSISTANT = "assistant"
     USER = "user"
 
+class InterviewRole(str, Enum):
+    STRICT_SENIOR = "strict_senior"
+    PRAGMATIC_LEAD = "pragmatic_lead"
+    FRIENDLY_HR = "friendly_hr"

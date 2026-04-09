@@ -8,6 +8,7 @@ from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
 from sqlalchemy import Boolean, ForeignKey, Integer, String, Text, MetaData
 from fastapi_users.db import SQLAlchemyBaseUserTableUUID,SQLAlchemyBaseOAuthAccountTableUUID
 from schemas.schemas import UserReadSchema
+from sqlalchemy.dialects.postgresql import JSONB
 
 from sqlalchemy import Uuid
 import uuid
@@ -73,11 +74,15 @@ class Interview(Base):
     id: Mapped[uuidpk]
     user_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("users.id"))
     resume_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("resumes.id"))
+    vacancy_context: Mapped[str | None] = mapped_column(Text, nullable=True)
+    role: Mapped[str] = mapped_column(String, default="pragmatic_lead")
     status: Mapped[SessionStatus] = mapped_column(default=SessionStatus.PLANNED)
+    prep_plan: Mapped[list[str] | None] = mapped_column(JSONB, nullable=True)
     total_score: Mapped[Optional[int]] = mapped_column(Integer)
     created_at: Mapped[datetime] = mapped_column(
     default=lambda: datetime.now(msk_tz).replace(tzinfo=None)
     )
+    
     user: Mapped["User"] = relationship(back_populates="interviews")
     resume: Mapped["Resume"] = relationship(back_populates="interviews")
     messages: Mapped[List["Message"]] = relationship(back_populates="interview", cascade="all, delete-orphan")

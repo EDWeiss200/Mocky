@@ -3,7 +3,9 @@ from fastapi import APIRouter, Depends, UploadFile, File, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 import PyPDF2 
 import io
-
+from config import client
+from models.models import Resume
+import json
 
 class ResumeServices:
 
@@ -65,7 +67,7 @@ class ResumeServices:
 
         return resume
 
-    async def get_resume(self,resume_id,user_id):
+    async def get_resume(self,resume_id,user_id) -> Resume:
 
         filters = [
             self.resume_repo.model.id == resume_id,
@@ -92,5 +94,58 @@ class ResumeServices:
         resumes = await self.resume_repo.find_filter(filters)
 
         return resumes
+    
+    async def analyze_resume(self,raw_text):
+
+
+        system_prompt = """Ты топовый IT-рекрутер из FAANG и строгий Tech Lead в одном лице.
+        Твоя задача — провести жесткий, но справедливый аудит резюме кандидата.
+
+        Проанализируй текст и оцени:
+        1. Какой реальный грейд (Junior/Middle/Senior) просматривается через описанный опыт?
+        2. Насколько востребован этот стек технологий сейчас на рынке (оценка от 1 до 10)?
+        3. Какие сильные стороны выделяют кандидата?
+        4. Есть ли "красные флаги" (отсутствие достижений, непонятные формулировки, прыжки по стеку и тд)?
+        5. Что конкретно нужно исправить, чтобы повысить конверсию в приглашения?
+
+        Выдай ответ СТРОГО в формате JSON без markdown:
+        {
+            "estimated_grade": "Твой вердикт по грейду",
+            "market_demand_score": <число 1-10>,
+            "strong_points": ["плюс 1", "плюс 2" и тд],
+            "red_flags": ["проблема 1", "проблема 2" и тд],
+            "recommendations": ["совет 1", "совет 2" и тд]
+        }
+        """
+
+        gpt_messages = [
+            {"role": "system", "content": system_prompt},
+            {"role": "user", "content": f"Вот мое резюме:\n---\n{raw_text}\n---"}
+        ]
+
+        try:
+            response = await client.chat.completions.create(
+                model="o4-mini", # Отлично справляется с такими задачами анализа
+                messages=gpt_messages,
+            )
+            ai_reply = response.choices[0].message.content
+
+            # Очистка и парсинг JSON (твой проверенный метод)
+            cleaned_reply = ai_reply.replace("```json", "").replace("```", "").strip()
+            start_idx = cleaned_reply.find('{')
+            end_idx = cleaned_reply.rfind('}') + 1
+            
+            if start_idx != -1 and end_idx != 0:
+                cleaned_reply = cleaned_reply[start_idx:end_idx]
+                
+            return json.loads(cleaned_reply)
+
+        except json.JSONDecodeError:
+            raise HTTPException(status_code=500, detail="ИИ выдал нечитаемый формат анализа резюме")
+        except Exception as e:
+            print(f"Ошибка API при аудите резюме: {e}")
+            raise HTTPException(status_code=500, detail="Ошибка при обращении к ИИ")
+
+
     
 

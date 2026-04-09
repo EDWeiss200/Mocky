@@ -1,10 +1,11 @@
 from services.resume_services import ResumeServices
 from models.models import User,Resume
-from schemas.schemas import UserReadSchema
+from schemas.schemas import UserReadSchema, ResumeAnalysisResponse
 from api.dependencies import resume_service
 from auth.auth import current_user
 from fastapi import APIRouter, Depends, UploadFile, File, HTTPException
 from fastapi_cache.decorator import cache
+from uuid import UUID
 
 
 
@@ -42,3 +43,20 @@ async def get_resumes_user(
     resumes = await resume_service.get_resumes_user(user.id)
 
     return resumes
+
+@router.post('/resume/{resume_id}/analyze', response_model=ResumeAnalysisResponse)
+async def analyze_resume_endpoint(
+    resume_id: UUID,
+    user: User = Depends(current_user),
+    resume_service: ResumeServices = Depends(resume_service)
+):
+    # 1. Достаем резюме пользователя из базы
+    resume = await resume_service.get_resume(resume_id, user.id)
+    if not resume:
+        raise HTTPException(status_code=404, detail="Резюме не найдено")
+    
+
+    analysis_result = await resume_service.analyze_resume(resume.raw_text)
+    
+
+    return analysis_result

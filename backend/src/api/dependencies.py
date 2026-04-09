@@ -12,6 +12,8 @@ from repositories.message_repo import MessageRepository
 
 from services.telegram_services import TelegramService
 
+from services.HeadHunter_services import HeadHunterService
+
 
 
 def user_service() -> UserServices:
@@ -28,5 +30,9 @@ def message_service() -> MessageServices:
 
 def telegram_service() -> TelegramService:
     return TelegramService()
+
+def headhunter_service() -> HeadHunterService:
+    return HeadHunterService()
+
 
 

@@ -3,13 +3,13 @@ from pydantic import EmailStr
 from typing import Optional
 from fastapi_users import schemas
 from datetime import datetime
-from pydantic import BaseModel, ConfigDict, EmailStr
+from pydantic import BaseModel, ConfigDict, EmailStr,HttpUrl
 from datetime import datetime
 from typing import List, Optional
 from enum import Enum
 from pydantic import BaseModel, ConfigDict
 from pydantic.alias_generators import to_camel
-from models.enum import SessionStatus,MessageRole
+from models.enum import SessionStatus,MessageRole, InterviewRole
 
 from uuid import UUID
 
@@ -63,6 +63,10 @@ class InterviewBase(BaseModel):
 class InterviewCreate(InterviewBase):
     user_id: UUID
     resume_id: UUID
+    status: SessionStatus
+    role: InterviewRole = InterviewRole.PRAGMATIC_LEAD
+    prep_plan: List[str] | None = None
+    vacancy_context: str | None = None
 
 
 class InterviewRead(InterviewBase):
@@ -78,7 +82,7 @@ class InterviewRead(InterviewBase):
 
 class StartInterviewRequest(BaseModel):
     resume_id: UUID
-    
+    role: InterviewRole = InterviewRole.PRAGMATIC_LEAD
     model_config = ConfigDict(alias_generator=to_camel, populate_by_name=True)
 
 
@@ -95,3 +99,24 @@ class TelegramLoginSchema(BaseModel):
 class TelegramLinkRequest(BaseModel):
     telegram_id: str
     token: str
+
+
+class StartHHInterviewRequest(BaseModel):
+    resume_id: UUID 
+    hh_url: HttpUrl
+    role: InterviewRole = InterviewRole.PRAGMATIC_LEAD
+
+
+class GapAnalysisResponse(BaseModel):
+    match_percentage: int
+    matched_skills: List[str]
+    missing_skills: List[str]
+    warning: str
+
+
+class ResumeAnalysisResponse(BaseModel):
+    estimated_grade: str         
+    market_demand_score: int      
+    strong_points: List[str]      
+    red_flags: List[str]          
+    recommendations: List[str]

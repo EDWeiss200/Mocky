@@ -1,16 +1,19 @@
 from services.interview_services import InterviewServices
 from services.resume_services import ResumeServices
 from services.message_services import MessageServices
+from services.HeadHunter_services import HeadHunterService
 from models.models import User,Resume,MessageRole
-from schemas.schemas import UserReadSchema, StartInterviewRequest, AnswerRequest, SessionStatus
+from schemas.schemas import UserReadSchema, StartInterviewRequest, AnswerRequest, SessionStatus, StartHHInterviewRequest, GapAnalysisResponse
 from api.dependencies import interview_service
 from api.dependencies import resume_service
 from api.dependencies import message_service
+from api.dependencies import headhunter_service
 from auth.auth import current_user
 from fastapi import APIRouter, Depends, UploadFile, File, HTTPException
 from api.user_router import user_key_builder
 from fastapi_cache.decorator import cache
 from uuid import UUID
+from pydantic import HttpUrl
 
 
 
@@ -30,7 +33,7 @@ async def start_interview(
     
 ):
     resume = await resume_service.get_resume(req.resume_id,user.id)
-    interview_id,first_question = await interview_service.start_interview(resume,user.id)
+    interview_id,first_question = await interview_service.start_interview(resume,user.id,req.role)
     message_id = await message_service.add_message(interview_id,MessageRole.ASSISTANT,first_question)
 
     return {
@@ -70,7 +73,7 @@ async def answer_question(
     user_answers_count = sum(1 for msg in message_history if msg.role == MessageRole.USER)
     if user_answers_count < MAX_QUESTIONS:
 
-        ai_reply = await interview_service.answer(resume,message_history)
+        ai_reply = await interview_service.answer(resume,message_history,interview)
         message_id = await message_service.add_message(interview_id,MessageRole.ASSISTANT,ai_reply)
         return {
             "reply": ai_reply,
@@ -79,15 +82,16 @@ async def answer_question(
     
     else:
 
-        score,feedback = await interview_service.answer_finish(resume,message_history)
+        score,feedback,prep_plan = await interview_service.answer_finish(resume,message_history,interview)
 
-        await interview_service.finish_interview(interview_id, score)
+        await interview_service.finish_interview(interview_id, score,prep_plan)
         await message_service.add_message(interview_id, MessageRole.ASSISTANT, feedback)
 
         return {
             "status": "completed", 
             "score": score, 
-            "feedback": feedback
+            "feedback": feedback,
+            "prepPlan": prep_plan
         }
 
 
@@ -142,7 +146,7 @@ async def answer_question_voice(
     user_answers_count = sum(1 for msg in message_history if msg.role == MessageRole.USER)
     if user_answers_count < MAX_QUESTIONS:
 
-        ai_reply = await interview_service.answer(resume,message_history)
+        ai_reply = await interview_service.answer(resume,message_history,interview)
         message_id = await message_service.add_message(interview_id,MessageRole.ASSISTANT,ai_reply)
         return {
             "reply": ai_reply,
@@ -151,15 +155,16 @@ async def answer_question_voice(
     
     else:
 
-        score,feedback = await interview_service.answer_finish(resume,message_history)
+        score,feedback,prep_plan = await interview_service.answer_finish(resume,message_history,interview)
 
-        await interview_service.finish_interview(interview_id, score)
+        await interview_service.finish_interview(interview_id, score,prep_plan)
         await message_service.add_message(interview_id, MessageRole.ASSISTANT, feedback)
 
         return {
             "status": "completed", 
             "score": score, 
-            "feedback": feedback
+            "feedback": feedback,
+            "prepPlan": prep_plan
         }
 
         
@@ -241,7 +246,7 @@ async def start_interview(
     
 ):
     resume = await resume_service.get_resume(req.resume_id,user.id)
-    interview_id,first_question = await interview_service.test_start_interview(resume,user.id)
+    interview_id,first_question = await interview_service.test_start_interview(resume,user.id,req.role)
     message_id = await message_service.add_message(interview_id,MessageRole.ASSISTANT,first_question)
 
     return {
@@ -275,7 +280,7 @@ async def answer_question(
     user_answers_count = sum(1 for msg in message_history if msg.role == MessageRole.USER)
     if user_answers_count < MAX_QUESTIONS:
 
-        ai_reply = await interview_service.test_answer(resume,message_history)
+        ai_reply = await interview_service.test_answer(resume,message_history,interview)
         message_id = await message_service.add_message(interview_id,MessageRole.ASSISTANT,ai_reply)
         return {
             "reply": ai_reply,
@@ -284,7 +289,7 @@ async def answer_question(
     
     else:
 
-        score,feedback = await interview_service.test_answer_finish(resume,message_history)
+        score,feedback = await interview_service.test_answer_finish(resume,message_history,interview)
 
         await interview_service.finish_interview(interview_id, score)
         await message_service.add_message(interview_id, MessageRole.ASSISTANT, feedback)
@@ -323,6 +328,48 @@ async def finish_interview(
         "feedback": feedback
     }
 
+#=============================ЭНДПОИНТЫ ДЛЯ ИНТЕРВЬЮ С ВАКАНСИЕЙ==============================#
 
-
+@router.post("/start/hh")
+async def start_hh_interview_endpoint(
+    req: StartHHInterviewRequest,
+    user: User = Depends(current_user),
+    interview_service: InterviewServices = Depends(interview_service),
+    headhunter_service: HeadHunterService = Depends(headhunter_service),
+    resume_service: ResumeServices = Depends(resume_service),
+    message_service: MessageServices = Depends(message_service)
+):
     
+    resume = await resume_service.get_resume(req.resume_id, user.id)
+
+    vacancy_data = await headhunter_service.get_vacancy_data(req.hh_url)
+
+    interview_id, first_question = await interview_service.start_hh_interview(resume, vacancy_data, user.id,req.role)
+    
+    message_id = await message_service.add_message(interview_id, MessageRole.ASSISTANT, first_question)
+
+    return {
+        "interviewId": interview_id,
+        "vacancyTitle": vacancy_data['title'], 
+        "firstQuestion": first_question,
+        "messageId": message_id
+    }
+
+@router.post('/analyze_vacancy', response_model=GapAnalysisResponse)
+async def analyze_vacancy_gaps(
+    req: StartHHInterviewRequest,
+    user: User = Depends(current_user),
+    interview_service: InterviewServices = Depends(interview_service),
+    resume_service: ResumeServices = Depends(resume_service)
+):
+    resume = await resume_service.get_resume(req.resume_id, user.id)
+    if not resume:
+        raise HTTPException(status_code=404, detail="Резюме не найдено")
+    
+    hh_service = HeadHunterService()
+    vacancy_data = await hh_service.get_vacancy_data(req.hh_url)
+    
+    # запускаем анализ
+    gaps = await interview_service.analyze_gaps(resume, vacancy_data)
+    
+    return gaps
