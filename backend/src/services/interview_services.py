@@ -27,7 +27,7 @@ class InterviewServices:
 
         return interview
     
-    async def start_interview(self, resume: Resume,user_id, role_key: str): 
+    async def start_interview(self, resume: Resume,user_id, role_key: str,number_question): 
 
         if not resume:
             raise HTTPException(status_code=404, detail="Резюме не найдено")
@@ -38,6 +38,7 @@ class InterviewServices:
             resume_id=resume.id, 
             status=SessionStatus.ACTIVE,
             role=role_key,
+            number_question=number_question
         )
 
         interview = interview.model_dump()
@@ -76,7 +77,7 @@ class InterviewServices:
         return interview_id,first_question
     
 
-    async def test_start_interview(self, resume: Resume,user_id,role_key):
+    async def test_start_interview(self, resume: Resume,user_id,role_key,number_question):
         if not resume:
             raise HTTPException(status_code=404, detail="Резюме не найдено")
 
@@ -85,7 +86,8 @@ class InterviewServices:
             user_id=user_id, 
             resume_id=resume.id, 
             status=SessionStatus.ACTIVE,
-            role=role_key
+            role=role_key,
+            number_question=number_question
         )
 
         interview = interview.model_dump()
@@ -208,7 +210,7 @@ class InterviewServices:
             3. в фидбеке перечисли, на какие конкретно вопросы кандидат не смог ответить, и отметь темы, в которых он показал хорошие знания.
 
             Выдай ответ строго в формате JSON без markdown-разметки:
-            {"score": <число>, "feedback": "<разбор>"}
+            {{"score": <число>, "feedback": "<разбор>"}}
             """
 
         gpt_messages = [
@@ -425,7 +427,7 @@ class InterviewServices:
 #===========  ФУНКЦИИ ДЛЯ ИНТЕРВЬЮ С ВАКАНСИЕЙ ==================#
 
 
-    async def start_hh_interview(self, resume: Resume, vacancy_data: dict, user_id,role_key:str):
+    async def start_hh_interview(self, resume: Resume, vacancy_data: dict, user_id,role_key:str,number_question):
 
         context_string = (
             f"Позиция: {vacancy_data['title']}\n"
@@ -438,7 +440,8 @@ class InterviewServices:
             resume_id=resume.id, 
             status=SessionStatus.ACTIVE,
             vacancy_context=context_string,
-            role=role_key
+            role=role_key,
+            number_question=number_question
         )
 
         interview_id = await self.interview_repo.add_one(interview.model_dump())

@@ -33,7 +33,7 @@ async def start_interview(
     
 ):
     resume = await resume_service.get_resume(req.resume_id,user.id)
-    interview_id,first_question = await interview_service.start_interview(resume,user.id,req.role)
+    interview_id,first_question = await interview_service.start_interview(resume,user.id,req.role,req.number_question)
     message_id = await message_service.add_message(interview_id,MessageRole.ASSISTANT,first_question)
 
     return {
@@ -59,7 +59,7 @@ async def answer_question(
     message_service: MessageServices = Depends(message_service)
 ):
 
-    MAX_QUESTIONS = 5
+
 
     interview = await interview_service.get_interview(interview_id)
     if not interview or interview.user_id!=user.id:
@@ -71,7 +71,7 @@ async def answer_question(
     resume = await resume_service.get_resume(interview.resume_id,user.id)
 
     user_answers_count = sum(1 for msg in message_history if msg.role == MessageRole.USER)
-    if user_answers_count < MAX_QUESTIONS:
+    if user_answers_count < interview.number_question:
 
         ai_reply = await interview_service.answer(resume,message_history,interview)
         message_id = await message_service.add_message(interview_id,MessageRole.ASSISTANT,ai_reply)
@@ -108,7 +108,7 @@ async def answer_question_voice(
     message_service: MessageServices = Depends(message_service)
 ):
 
-    MAX_QUESTIONS = 5
+
     MAX_FILE_SIZE = 25 * 1024 * 1024 #25mb в байтах
     ALLOWED_EXTENSIONS = {"mp3", "mp4", "mpeg", "mpga", "m4a", "wav", "webm"}
 
@@ -144,7 +144,8 @@ async def answer_question_voice(
     resume = await resume_service.get_resume(interview.resume_id,user.id)
 
     user_answers_count = sum(1 for msg in message_history if msg.role == MessageRole.USER)
-    if user_answers_count < MAX_QUESTIONS:
+
+    if user_answers_count < interview.number_question:
 
         ai_reply = await interview_service.answer(resume,message_history,interview)
         message_id = await message_service.add_message(interview_id,MessageRole.ASSISTANT,ai_reply)
@@ -246,7 +247,7 @@ async def start_interview(
     
 ):
     resume = await resume_service.get_resume(req.resume_id,user.id)
-    interview_id,first_question = await interview_service.test_start_interview(resume,user.id,req.role)
+    interview_id,first_question = await interview_service.test_start_interview(resume,user.id,req.role,req.number_question)
     message_id = await message_service.add_message(interview_id,MessageRole.ASSISTANT,first_question)
 
     return {
@@ -266,7 +267,6 @@ async def answer_question(
     message_service: MessageServices = Depends(message_service)
 ):
 
-    MAX_QUESTIONS = 5
 
     interview = await interview_service.get_interview(interview_id)
     if not interview or interview.user_id!=user.id:
@@ -278,7 +278,7 @@ async def answer_question(
     resume = await resume_service.get_resume(interview.resume_id,user.id)
 
     user_answers_count = sum(1 for msg in message_history if msg.role == MessageRole.USER)
-    if user_answers_count < MAX_QUESTIONS:
+    if user_answers_count < interview.number_question:
 
         ai_reply = await interview_service.test_answer(resume,message_history,interview)
         message_id = await message_service.add_message(interview_id,MessageRole.ASSISTANT,ai_reply)
@@ -344,7 +344,7 @@ async def start_hh_interview_endpoint(
 
     vacancy_data = await headhunter_service.get_vacancy_data(req.hh_url)
 
-    interview_id, first_question = await interview_service.start_hh_interview(resume, vacancy_data, user.id,req.role)
+    interview_id, first_question = await interview_service.start_hh_interview(resume, vacancy_data, user.id,req.role,req.number_question)
     
     message_id = await message_service.add_message(interview_id, MessageRole.ASSISTANT, first_question)
 

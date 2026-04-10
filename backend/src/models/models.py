@@ -76,6 +76,7 @@ class Interview(Base):
     resume_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("resumes.id"))
     vacancy_context: Mapped[str | None] = mapped_column(Text, nullable=True)
     role: Mapped[str] = mapped_column(String, default="pragmatic_lead")
+    number_question: Mapped[Optional[int] | 5] = mapped_column(Integer)
     status: Mapped[SessionStatus] = mapped_column(default=SessionStatus.PLANNED)
     prep_plan: Mapped[list[str] | None] = mapped_column(JSONB, nullable=True)
     total_score: Mapped[Optional[int]] = mapped_column(Integer)

@@ -64,6 +64,7 @@ class InterviewCreate(InterviewBase):
     user_id: UUID
     resume_id: UUID
     status: SessionStatus
+    number_question: int | None = 5
     role: InterviewRole = InterviewRole.PRAGMATIC_LEAD
     prep_plan: List[str] | None = None
     vacancy_context: str | None = None
@@ -82,6 +83,7 @@ class InterviewRead(InterviewBase):
 
 class StartInterviewRequest(BaseModel):
     resume_id: UUID
+    number_question: int
     role: InterviewRole = InterviewRole.PRAGMATIC_LEAD
     model_config = ConfigDict(alias_generator=to_camel, populate_by_name=True)
 
@@ -104,6 +106,7 @@ class TelegramLinkRequest(BaseModel):
 class StartHHInterviewRequest(BaseModel):
     resume_id: UUID 
     hh_url: HttpUrl
+    number_question: int | None = 5
     role: InterviewRole = InterviewRole.PRAGMATIC_LEAD
 
 
