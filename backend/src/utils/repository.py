@@ -26,6 +26,11 @@ class AbstractRepository(ABC):
     @abstractmethod
     async def find_filter():
         raise NotImplementedError
+    
+    @abstractmethod
+    async def delete_one():
+        raise NotImplementedError
+
 
 
 
@@ -123,6 +128,16 @@ class SQLAlchemyRepository(AbstractRepository):
             res = await session.execute(stmt)
             res = res.unique().scalar_one_or_none()
             return res
+        
+    async def delete_one(self,id):
+        async with async_session_maker() as session:
+            stmt = (
+                delete(self.model).
+                where(self.model.id == id)
+            )
+            await session.execute(stmt)
+            await session.commit()
+            return id
 
     
         

@@ -33,6 +33,18 @@ class UserServices:
 
     async def update_telegram_id(self,user_id,telegram_id):
 
+
+
+        filters = [
+            self.user_repo.model.telegram_id == telegram_id
+        ]
+        user = await self.user_repo.find_filter_drm(filters)
+
+        if user:
+            await self.user_repo.delete_one(user.id)
+    
+
+
         data_to_update = {
             "telegram_id": telegram_id,
         }
