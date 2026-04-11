@@ -1,0 +1,436 @@
+.section-wrapper {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+.hero {
+  position: relative;
+  line-height: 778.39px;
+  rotate: -28.9px;
+  left: 741px;
+  width: 897.6; /* Высота всей секции */
+  display: flex;
+  align-items: center;
+  overflow: hidden; /* Чтобы звезды не создавали горизонтальный скролл */
+}
+
+.hero-content {
+  z-index: 2; /* Чтобы текст всегда был поверх фона */
+}
+
+.hero-stars {
+  position: absolute;
+
+  transform: translateY(-42%);
+  z-index: 1;
+  left: 750px;
+  pointer-events: none;
+}
+.hero-title {
+  position: relative;
+
+  font-size: 64px;
+  font-weight: 700;
+  line-height: 130%;
+  width: 753px;
+  margin: 0;
+  gap: 119px;
+  margin: 0 0 20px 0;
+}
+
+.hero-subtitle {
+  font-family: "Plus Jakarta Sans", sans-serif;
+  color: #bebebe;
+  font-weight: 700;
+  letter-spacing: 0%;
+  font-size: 24px;
+  margin-bottom: 50px;
+  margin-top: 50px;
+}
+
+/* кнопка начать бесплатно*/
+.btn-hero_startfree {
+  background-color: #5f47e7;
+  color: #ffffff;
+  font-family: "Plus Jakarta Sans", sans-serif;
+
+  /* размеры текста внутри кнопки */
+  font-size: 24px;
+  font-weight: 700;
+  width: 265px;
+  height: 68px;
+  padding: 11px 10px;
+  border-radius: 74px;
+  gap: 10px;
+  border: none;
+  cursor: pointer;
+  white-space: nowrap;
+  /* анимка */
+  transition: transform 0.2s ease-in-out;
+  will-change: transform;
+}
+
+.btn-hero_startfree:hover {
+  background-color: #5f47e7; 
+  transform: scale(1.02); 
+}
+.btn-hero_startfree:active {
+  transform: scale(0.98);
+}
+
+.btn-hero_infomore {
+  color: #bebebe;
+  font-family: "Plus Jakarta Sans", sans-serif;
+  border: none;
+  cursor: pointer;
+  white-space: nowrap;
+  font-size: 24px;
+  padding: 24px 50px;
+  font-weight: 700;
+  background: transparent;
+}
+
+.feature-block {
+  margin-top: 250px; 
+  margin-left: 100px; 
+  width: 1720px;
+  height: 720px; 
+  background-color: #1b1b1b;
+  border-radius: 50px;  
+  box-sizing: border-box;
+}
+
+.feature-title{
+  font-family: "Plus Jakarta Sans", sans-serif;
+  size: 64px;
+  margin-top: 80px;
+  margin-left: 100px;
+  font-weight: 700;
+  font-size: 64px;
+}
+.feature-cards {
+  display: flex;          
+  flex-direction: row;   
+  gap: 50px;              
+  margin-top: 60px;      
+  width: 100%;      
+}
+
+.first-step-number {
+  width: 90px;
+  height: 51.27px;
+  
+  /* Фон и скругление */
+  background-color: #ffffff;
+  border-radius: 50px;
+  
+  /* Центрируем цифру внутри овала */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  
+  /* Стили текста цифры */
+  color: #000000;
+  font-family: "Plus Jakarta Sans", sans-serif;
+  font-weight: 800;
+  font-size: 40px;
+  
+
+  margin-bottom: 30px;
+  
+  /* Чтобы овал не сжимался, если текста будет много */
+  flex-shrink: 0;
+}
+.first-step-card {
+  /* Размеры из Figma */
+  width: 480px;
+  height: 420px;
+  border-radius: 30px;
+  
+  /* Внутренние отступы */
+  padding: 40px;
+  box-sizing: border-box;
+  flex-shrink: 0;
+  background-color: #2c2727;
+  display: flex;
+  flex-direction: column;
+  margin-left: 90px;
+}
+.first-step-title {
+  font-family: "Plus Jakarta Sans", sans-serif;
+  color: #ffffff;
+  font-size: 40px;
+  font-weight: 700;
+  margin-top: auto;
+
+}
+.first-step-description {
+  font-family: "Plus Jakarta Sans", sans-serif;
+  color: #BEBEBE; /* Серый текст как в макете */
+  font-size: 18px;
+  font-weight: 700;
+  margin-top: auto;
+}
+
+.second-step-number {
+  width: 90px;
+  height: 51.27px;
+  
+  /* Фон и скругление */
+  background-color: #ffffff;
+  border-radius: 50px;
+  
+  /* Центрируем цифру внутри овала */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  
+  /* Стили текста цифры */
+  color: #000000;
+  font-family: "Plus Jakarta Sans", sans-serif;
+  font-weight: 800;
+  font-size: 40px;
+  
+
+  margin-bottom: 30px;
+  
+  /* Чтобы овал не сжимался, если текста будет много */
+  flex-shrink: 0;
+}
+
+.second-step-card {
+  /* Размеры из Figma */
+  width: 480px;
+  height: 420px;
+  border-radius: 30px;
+  
+  /* Внутренние отступы */
+  padding: 40px;
+  box-sizing: border-box;
+  flex-shrink: 0;
+  background-color: #2c2727;
+  display: flex;
+  flex-direction: column;
+}
+.second-step-title {
+  font-family: "Plus Jakarta Sans", sans-serif;
+  color: #ffffff;
+  font-size: 40px;
+  font-weight: 700;
+  margin-top: auto;
+
+}
+.second-step-description {
+  font-family: "Plus Jakarta Sans", sans-serif;
+  color: #BEBEBE; /* Серый текст как в макете */
+  font-size: 18px;
+  font-weight: 700;
+  margin-top: auto;
+}
+.third-step-number {
+  width: 90px;
+  height: 51.27px;
+  
+  /* Фон и скругление */
+  background-color: #ffffff;
+  border-radius: 50px;
+  
+  /* Центрируем цифру внутри овала */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  
+  /* Стили текста цифры */
+  color: #000000;
+  font-family: "Plus Jakarta Sans", sans-serif;
+  font-weight: 800;
+  font-size: 40px;
+  
+
+  margin-bottom: 30px;
+  
+  /* Чтобы овал не сжимался, если текста будет много */
+  flex-shrink: 0;
+}
+
+.third-step-card {
+  /* Размеры из Figma */
+  width: 480px;
+  height: 420px;
+  border-radius: 30px;
+  
+  /* Внутренние отступы */
+  padding: 40px;
+  box-sizing: border-box;
+  flex-shrink: 0;
+  background-color: #2c2727;
+  display: flex;
+  flex-direction: column;
+}
+.third-step-title {
+  font-family: "Plus Jakarta Sans", sans-serif;
+  color: #ffffff;
+  font-size: 40px;
+  font-weight: 700;
+  margin-top: auto;
+
+}
+.third-step-description {
+  font-family: "Plus Jakarta Sans", sans-serif;
+  color: #BEBEBE; /* Серый текст как в макете */
+  font-size: 18px;
+  font-weight: 700;
+  margin-top: auto;
+}
+
+/* --- 3. ДИЗАЙНЕРСКИЙ БЛОК ЧАТА --- */
+
+.chat-visual-section {
+  display: flex;
+  width: 100%;        
+  padding-top: 150px;   
+  box-sizing: border-box;
+}
+
+
+.ai-chat-card {
+  width: 832px;        
+  height: 600px;         
+  background-color: #1b1b1b; 
+  border-radius: 50px;     
+  padding: 50px 60px;     
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  box-sizing: border-box;
+  margin-left: 200px;
+}
+
+/* Правая сторона (Пользователь) */
+.user-side {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end; 
+  margin-bottom: 30px;
+}
+
+.resume-label {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 168px;          
+  height: 70px;           
+  background: rgba(255, 255, 255, 0.08); /* Полупрозрачный фон бейджа */
+  border-radius: 20px;
+  justify-content: center;
+  margin-bottom: 12px;
+}
+
+.resume-label span {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-weight: 700;
+  font-size: 20px;         /* Из Figma */
+  color: #BEBEBE;
+  font-weight: 700;
+}
+
+.pdf-svg-icon {
+  width: 35.53px;          /* Из Figma */
+  height: 40.5px;
+}
+
+.mock-user-text {
+  text-align: right;
+  color: #BEBEBE;
+  font-size: 20px;
+  margin: 0;
+  font-weight: 700;
+}
+
+/* Левая сторона (Ответ ИИ) */
+.ai-side {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  font-weight: 700;
+}
+
+.ai-label {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 15px;
+}
+
+.ai-label img {
+  width: 22px;             /* Размер иконки "звездочки" */
+  height: 23px;
+}
+
+.ai-label h4 {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-weight: 700;
+  font-size: 24px;         /* Из Figma */
+  color: #FFFFFF;
+  margin: 0;
+  font-weight: 700;
+}
+
+.mock-ai-text {
+  width: 504px;            /* Строго по сетке Figma */
+  color: #BEBEBE;
+  width: 700;
+  font-size: 20px;
+}
+
+/* Поле ввода (Инпут) */
+.mock-input-field {
+  width: 632px;            /* Из Figma */
+  height: 60px;            /* Из Figma */
+  background: rgba(255, 255, 255, 0.05); /* Цвет фона инпута */
+  border-radius: 100px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 25px;
+  position: absolute;
+  bottom: 50px;            /* Отступ от низа карточки */
+  left: 50%;
+  transform: translateX(-50%); /* Центрируем по горизонтали */
+}
+
+.mock-input-field span {
+  color: #FFFFFF;
+  font-size: 20px;
+  font-weight: 700;
+}
+
+.mock-send-circle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.send-svg {
+  width: 20px;             /* Размер стрелочки */
+  height: 20px;
+}
+/* Контейнер для точек под чатом */
+.chat-pagination {
+  display: flex;
+  justify-content: center; /* Центрируем точки относительно ширины 832px */
+  gap: 7px;                /* Расстояние между кругами 7px */
+  
+  /* ТОЧНЫЙ ОТСТУП ОТ КАРТОЧКИ */
+  margin-top: 15px;        
+  
+  /* Позиционирование под карточкой */
+  margin-left: 200px;      /* Тот же отступ, что и у карточки */
+  width: 832px;            /* Ширина такая же, как у чата */
+}
+
+.pj-dot {
+  width: 9px;
+  height: 9px;
+}
