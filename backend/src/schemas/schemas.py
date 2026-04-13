@@ -123,3 +123,16 @@ class ResumeAnalysisResponse(BaseModel):
     strong_points: List[str]      
     red_flags: List[str]          
     recommendations: List[str]
+
+
+class ChartPoint(BaseModel):
+    date: datetime
+    score: int
+
+class ResumeStatisticsResponse(BaseModel):
+    total_interviews: int
+    average_score: float
+    max_score: int
+    score_dynamics: List[ChartPoint]
+    top_recommendations: List[str]
+    radar_data: dict[str, int]

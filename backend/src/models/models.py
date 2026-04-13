@@ -37,7 +37,7 @@ class User(SQLAlchemyBaseUserTableUUID, Base):
     id: Mapped[uuidpk]
     username: Mapped[str] = mapped_column(nullable=False)
     email: Mapped[str] = mapped_column(nullable=False)
-    telegram_id: Mapped[Optional[str]] = mapped_column(unique=True)
+    telegram_id: Mapped[Optional[str | None]] = mapped_column(unique=True)
     hashed_password: Mapped[str] = mapped_column(String(length=1024), nullable=False)
     oauth_accounts: Mapped[List[OAuthAccount]] = relationship(
         "OAuthAccount", lazy="joined", cascade="all, delete-orphan"
@@ -83,6 +83,7 @@ class Interview(Base):
     created_at: Mapped[datetime] = mapped_column(
     default=lambda: datetime.now(msk_tz).replace(tzinfo=None)
     )
+    skills_score: Mapped[dict | None] = mapped_column(JSONB, nullable=True)
     
     user: Mapped["User"] = relationship(back_populates="interviews")
     resume: Mapped["Resume"] = relationship(back_populates="interviews")

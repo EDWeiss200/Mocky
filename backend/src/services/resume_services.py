@@ -6,11 +6,24 @@ import io
 from config import client
 from models.models import Resume
 import json
+import asyncio
+
+def extract_text_from_pdf_sync(file_bytes: bytes) -> str:
+        pdf_reader = PyPDF2.PdfReader(io.BytesIO(file_bytes))
+        extracted_text = ""
+        for page in pdf_reader.pages:
+            text = page.extract_text()
+            if text:
+                extracted_text += text + "\n"
+        return extracted_text.strip()
+
 
 class ResumeServices:
 
     def __init__(self,resume_repo: AbstractRepository) -> None:
         self.resume_repo = resume_repo()
+
+   
 
     async def upload_resume(self,file: File,user):
 
@@ -20,12 +33,12 @@ class ResumeServices:
         try:
             # читаем файл прямо в оперативной памяти
             content = await file.read()
-            pdf_reader = PyPDF2.PdfReader(io.BytesIO(content))
+
+            extracted_text = await asyncio.to_thread(extract_text_from_pdf_sync, content)
             
             # извлекаем текст со всех страниц
-            extracted_text = ""
-            for page in pdf_reader.pages:
-                extracted_text += page.extract_text() + "\n"
+            if not extracted_text:
+                raise HTTPException(status_code=400, detail="Не удалось извлечь текст из PDF. Возможно, файл состоит из картинок.")
 
             if not extracted_text.strip():
                 raise HTTPException(status_code=400, detail="Не удалось извлечь текст из PDF")
@@ -60,12 +73,6 @@ class ResumeServices:
 
         return resume
     
-
-    async def get_resume_by_id(self,resume_id):
-
-        resume = await self.resume_repo.find_id(resume_id)
-
-        return resume
 
     async def get_resume(self,resume_id,user_id) -> Resume:
 
@@ -146,6 +153,6 @@ class ResumeServices:
             print(f"Ошибка API при аудите резюме: {e}")
             raise HTTPException(status_code=500, detail="Ошибка при обращении к ИИ")
 
-
+    
     
 

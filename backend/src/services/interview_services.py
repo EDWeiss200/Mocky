@@ -1,9 +1,12 @@
 from utils.repository import AbstractRepository
 from schemas.schemas import StartInterviewRequest,InterviewCreate,MessageCreate
 from models.models import Resume,SessionStatus,Message,MessageRole, Interview
+from models.enum import SessionStatus
 from fastapi import HTTPException
 from config import client
 import json
+from uuid import UUID
+from schemas.schemas import ChartPoint,ResumeStatisticsResponse
 
 
 PERSONAS = {
@@ -11,6 +14,8 @@ PERSONAS = {
     "pragmatic_lead": "Ты адекватный Tech Lead. Фокусируешься на бизнес-логике, прагматичных решениях и реальном опыте, без лишней духоты.",
     "friendly_hr": "Ты дружелюбный и поддерживающий ментор. Твоя цель — раскрыть потенциал кандидата, ты часто хвалишь и мягко направляешь при ошибках."
 }
+
+CATEGORY = ["Языки","Фреймворки","Архитектура","Базы данных","Теория"]
 
 class InterviewServices:
 
@@ -181,36 +186,63 @@ class InterviewServices:
 
 
     async def answer_finish(self, resume: Resume, message_history, interview):
+        
         persona = PERSONAS[interview.role]
         if interview.vacancy_context:
-            system_prompt = f"""{persona}
+            system_prompt = f"""{persona} 
+            Собеседование на вакансию завершено.
             
             Контекст вакансии:
             {interview.vacancy_context}
             
-            твоя задача: проанализировать ТОЛЬКО историю переписки.
-            
-            правила оценки:
-            1. ответ "не знаю" — это 0 баллов.
-            2. в фидбеке перечисли ошибки.
-            3. составь конкретный план подготовки (prep_plan) из 3-5 пунктов. Опирайся на то, где кандидат ошибся, и что требуют в вакансии.
-            
-            выдай ответ строго в формате JSON:
-            {{"score": <число от 0 до 100>, "feedback": "<разбор>", "prep_plan": ["тема 1", "тема 2" и тд]}}
+            Твоя задача: проанализировать ТОЛЬКО историю переписки. 
+            Оценивай исключительно ответы кандидата в чате.
+
+            Обращайся к кандидату напрямую на "ты"
+
+            Правила оценки:
+            1. ответ "не знаю" — это 0 баллов за вопрос.
+            2. если на всё ответил "не знаю", итоговый балл — 0.
+            3. рассчитай итоговый балл (score) строго по 100-балльной шкале, где 100 — это идеальные ответы на все заданные вопросы.
+            4. перечисли в фидбеке сильные стороны и ошибки. обращайся к пользователю строго на "ты", категорически запрещено использовать слово "кандидат" или писать в третьем лице.
+            5. Оцени навыки по КАЖДОЙ из далее перечисленных категорий НЕЗАВИСИМО друг от друга по шкале от 0 до 100. кол-во категорий {len(CATEGORY)} категории: 
+            {CATEGORY}. 
+            КАТЕГОРИЧЕСКИ ЗАПРЕЩЕНО придумывать свои названия навыков, относи их в нужную категорию. 
+            Если какая-то из {len(CATEGORY)} категорий вообще не обсуждалась, просто не включай её в JSON.
+            6. составь prep_plan: список из 3-5 конкретных тем, которые нужно выучить под ЭТУ вакансию, исходя из ошибок.
+
+            Выдай ответ строго в формате JSON без markdown-разметки:
+            {{
+              "score": <число>, 
+              "skills_score": {{"категория 1": баллы, "Категория 2": баллы, "категория 3": баллы и тд}},
+              "feedback": "<разбор>", 
+              "prep_plan": ["тема 1", "тема 2" и тд]
+            }}
             """
         else:
             system_prompt = f"""{persona}
+            Собеседование завершено.
             
             Твоя задача: проанализировать ТОЛЬКО историю переписки (мои вопросы и ответы кандидата). 
             Резюме кандидата тебе недоступно. Оценивай исключительно то, что он отвечал в чате.
 
             Правила оценки:
             1. ответ "не знаю" или явный уход от ответа — это 0 баллов за конкретный вопрос.
-            2. если кандидат на все ответил "не знаю", итоговый балл должен быть строго 0.
-            3. в фидбеке перечисли, на какие конкретно вопросы кандидат не смог ответить, и отметь темы, в которых он показал хорошие знания.
+            2. рассчитай итоговый балл (score) строго по 100-балльной шкале, где 100 — это идеальные ответы на все заданные вопросы.
+            3. Оцени навыки по КАЖДОЙ из далее перечисленных категорий НЕЗАВИСИМО друг от друга по шкале от 0 до 100. кол-во категорий {len(CATEGORY)} категории: 
+            {CATEGORY}. 
+            КАТЕГОРИЧЕСКИ ЗАПРЕЩЕНО придумывать свои названия навыков, относи их в нужную категорию. 
+            Если какая-то из {len(CATEGORY)} категорий вообще не обсуждалась, просто не включай её в JSON.
+            4. перечисли в фидбеке сильные стороны и ошибки. обращайся к пользователю строго на "ты", категорически запрещено использовать слово "кандидат" или писать в третьем лице.
+            5. составь prep_plan: список из 3-5 конкретных тем, которые нужно подтянуть.
 
             Выдай ответ строго в формате JSON без markdown-разметки:
-            {{"score": <число>, "feedback": "<разбор>"}}
+            {{
+              "score": <число>, 
+              "skills_score": {{"категория 1": баллы, "Категория 2": баллы, "категория 3": баллы и тд}},
+              "feedback": "<разбор>", 
+              "prep_plan": ["тема 1", "тема 2" и тд]
+            }}
             """
 
         gpt_messages = [
@@ -250,6 +282,7 @@ class InterviewServices:
                 score = parsed_reply.get("score", 0)
                 feedback = parsed_reply.get("feedback", "Собеседование завершено.")
                 prep_plan = parsed_reply.get("prep_plan", [])
+                skills_score = parsed_reply.get("skills_score", {})
 
             except json.JSONDecodeError:
                 raise HTTPException(status_code=500, detail="ИИ выдал нечитаемый формат")
@@ -257,7 +290,7 @@ class InterviewServices:
             print(f"Ошибка API: {e}")
             raise HTTPException(status_code=500, detail="Ошибка при обращении к ИИ")
         
-        return score,feedback,prep_plan
+        return score,feedback,prep_plan,skills_score
     
 
 
@@ -276,12 +309,13 @@ class InterviewServices:
 
 
 
-    async def finish_interview(self, interview_id: int, score: int,prep_plan: list[str]):
+    async def finish_interview(self, interview_id: int, score: int,prep_plan: list[str], skills_score: dict):
 
         data_to_update = {
             "status": SessionStatus.COMPLETED,
             "total_score": score,
-            "prep_plan": prep_plan
+            "prep_plan": prep_plan,
+            "skills_score": skills_score
         }
         await self.interview_repo.update(interview_id, data_to_update)
 
@@ -303,29 +337,47 @@ class InterviewServices:
             Правила оценки:
             1. ответ "не знаю" — это 0 баллов за вопрос.
             2. если на всё ответил "не знаю", итоговый балл — 0.
-            3. перечисли в фидбеке, что было хорошо, а где кандидат "поплыл".
-            4. составь prep_plan: список из 3-5 конкретных тем, которые нужно выучить под ЭТУ вакансию, исходя из ошибок.
+            3. рассчитай итоговый балл (score) строго по 100-балльной шкале, где 100 — это идеальные ответы на все заданные вопросы.
+            4. перечисли в фидбеке сильные стороны и ошибки. обращайся к пользователю строго на "ты", категорически запрещено использовать слово "кандидат" или писать в третьем лице..
+            5. Оцени навыки по КАЖДОЙ из далее перечисленных категорий НЕЗАВИСИМО друг от друга по шкале от 0 до 100. кол-во категорий {len(CATEGORY)} категории: 
+            {CATEGORY}. 
+            КАТЕГОРИЧЕСКИ ЗАПРЕЩЕНО придумывать свои названия навыков, относи их в нужную категорию. 
+            Если какая-то из {len(CATEGORY)} категорий вообще не обсуждалась, просто не включай её в JSON.
+            6. составь prep_plan: список из 3-5 конкретных тем, которые нужно выучить под ЭТУ вакансию, исходя из ошибок.
 
-            Выдай ответ строго в формате JSON без markdown:
-            {{"score": <0-100>, "feedback": "<текст>", "prep_plan": ["тема 1", "тема 2" и тд]}}
+            Выдай ответ строго в формате JSON без markdown-разметки:
+            {{
+              "score": <число>, 
+              "skills_score": {{"категория 1": баллы, "Категория 2": баллы, "категория 3": баллы и тд}},
+              "feedback": "<разбор>", 
+              "prep_plan": ["тема 1", "тема 2" и тд]
+            }}
             """
         else: 
 
             system_prompt = f"""{persona}
-            Собеседование завершено.
+            Собеседование завершено
             
             Твоя задача: проанализировать ТОЛЬКО историю переписки (мои вопросы и ответы кандидата). 
             Резюме кандидата тебе недоступно. Оценивай исключительно то, что он отвечал в чате.
 
-            Обращайся к кандидату напрямую на "ты"
-
             Правила оценки:
             1. ответ "не знаю" или явный уход от ответа — это 0 баллов за конкретный вопрос.
-            2. если кандидат на все ответил "не знаю", итоговый балл должен быть строго 0.
-            3. в фидбеке перечисли, на какие конкретно вопросы кандидат не смог ответить, и отметь темы, в которых он показал хорошие знания.
+            2. рассчитай итоговый балл (score) строго по 100-балльной шкале, где 100 — это идеальные ответы на все заданные вопросы.
+            3. Оцени навыки по КАЖДОЙ из далее перечисленных категорий НЕЗАВИСИМО друг от друга по шкале от 0 до 100. кол-во категорий {len(CATEGORY)} категории: 
+            {CATEGORY}. 
+            КАТЕГОРИЧЕСКИ ЗАПРЕЩЕНО придумывать свои названия навыков, относи их в нужную категорию. 
+            Если какая-то из {len(CATEGORY)} категорий вообще не обсуждалась, просто не включай её в JSON.
+            4.перечисли в фидбеке сильные стороны и ошибки. обращайся к пользователю строго на "ты", категорически запрещено использовать слово "кандидат" или писать в третьем лице.
+            5. составь prep_plan: список из 3-5 конкретных тем, которые нужно подтянуть.
 
-            Выдай ответ строго в формате JSON:
-            {"score": <0-100>, "feedback": "<текст>"}
+            Выдай ответ строго в формате JSON без markdown-разметки:
+            {{
+              "score": <число>, 
+              "skills_score": {{"категория 1": баллы, "Категория 2": баллы, "категория 3": баллы и тд}},
+              "feedback": "<разбор>", 
+              "prep_plan": ["тема 1", "тема 2" и тд]
+            }}
             """
         
         gpt_messages = [{"role": "system", "content": system_prompt}]
@@ -359,6 +411,11 @@ class InterviewServices:
                 parsed_reply = json.loads(cleaned_reply)
                 score = parsed_reply.get("score", 0)
                 feedback = parsed_reply.get("feedback", "Собеседование завершено.")
+                
+                # ДОБАВЛЯЕМ ЭТУ СТРОКУ:
+                prep_plan = parsed_reply.get("prep_plan", [])
+                skills_score = parsed_reply.get("skills_score", {})
+                
             except json.JSONDecodeError:
                 raise HTTPException(status_code=500, detail="ИИ выдал нечитаемый формат")
             
@@ -368,7 +425,8 @@ class InterviewServices:
             print(f"Ошибка API: {e}")
             raise HTTPException(status_code=500, detail="Ошибка при подведении итогов")
         
-        return score,feedback
+        # ВОЗВРАЩАЕМ 3 ЗНАЧЕНИЯ:
+        return score, feedback, prep_plan,skills_score
     
 
     async def test_get_score_interview(self,history):
@@ -529,5 +587,58 @@ class InterviewServices:
             raise HTTPException(status_code=500, detail="Ошибка при обращении к ИИ")
         
 
+    async def get_resume_stats(self,resume_id: UUID,user_id: UUID):
 
+        filters = [
+            self.interview_repo.model.user_id == user_id,
+            self.interview_repo.model.resume_id == resume_id,
+            self.interview_repo.model.status == SessionStatus.COMPLETED
+        ]
+
+        interviews = await self.interview_repo.find_filter(filters)
         
+        if not interviews:
+            return None
+        
+        scores = [i.total_score for i in interviews if i.total_score is not None]
+
+        total = len(scores)
+        avg_s = round(sum(scores)/total,1) if total > 0 else 0
+        max_s = max(scores) if scores else 0
+
+        chart = [ChartPoint(date=i.created_at, score=i.total_score) for i in interviews]
+
+        tips = []
+        for i in interviews[-3:]:
+            if i.prep_plan:
+                tips.extend(i.prep_plan)
+
+        unique_tips = list(dict.fromkeys(tips))[:5]
+
+
+        skill_sums = {}
+        skill_counts = {}
+
+        for interview in interviews:
+            if interview.skills_score:
+                for skill, score in interview.skills_score.items():
+                    if skill not in skill_sums:
+                        skill_sums[skill] = 0
+                        skill_counts[skill] = 0
+                    skill_sums[skill] += score
+                    skill_counts[skill] += 1
+
+        # Вычисляем средний балл по каждому навыку
+        radar_data = {}
+        for skill in skill_sums:
+            radar_data[skill] = int(skill_sums[skill] / skill_counts[skill])
+
+
+        return ResumeStatisticsResponse(
+            total_interviews=total,
+            average_score=avg_s,
+            max_score=max_s,
+            score_dynamics=chart,
+            top_recommendations=unique_tips,
+            radar_data=radar_data 
+        )

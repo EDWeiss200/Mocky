@@ -82,17 +82,19 @@ async def answer_question(
     
     else:
 
-        score,feedback,prep_plan = await interview_service.answer_finish(resume,message_history,interview)
+        score,feedback,prep_plan,skill_scores = await interview_service.answer_finish(resume,message_history,interview)
 
-        await interview_service.finish_interview(interview_id, score,prep_plan)
+        await interview_service.finish_interview(interview_id, score, prep_plan,skill_scores)
         await message_service.add_message(interview_id, MessageRole.ASSISTANT, feedback)
 
         return {
-            "status": "completed", 
-            "score": score, 
+            "status": "completed",
+            "totalScore": score,
             "feedback": feedback,
-            "prepPlan": prep_plan
+            "prepPlan": prep_plan,
+            "skill_scores": skill_scores
         }
+
 
 
 
@@ -156,17 +158,19 @@ async def answer_question_voice(
     
     else:
 
-        score,feedback,prep_plan = await interview_service.answer_finish(resume,message_history,interview)
+        score,feedback,prep_plan, skill_scores= await interview_service.answer_finish(resume,message_history,interview)
 
-        await interview_service.finish_interview(interview_id, score,prep_plan)
+        await interview_service.finish_interview(interview_id, score,prep_plan,skill_scores)
         await message_service.add_message(interview_id, MessageRole.ASSISTANT, feedback)
 
         return {
-            "status": "completed", 
-            "score": score, 
+            "status": "completed",
+            "totalScore": score,
             "feedback": feedback,
-            "prepPlan": prep_plan
+            "prepPlan": prep_plan,
+            "skill_scores": skill_scores
         }
+
 
         
 
@@ -179,24 +183,26 @@ async def finish_interview(
     interview_service: InterviewServices = Depends(interview_service),
     message_service: MessageServices = Depends(message_service)
 ):
-    interwiew = await interview_service.get_interview(interview_id)
-    if not interview_service or interwiew.user_id != user.id:
+    interview = await interview_service.get_interview(interview_id)
+    if not interview or interview.user_id != user.id:
         raise HTTPException(status_code=404,detail="Интервью не найдено")
     
-    if interwiew.status == SessionStatus.COMPLETED:
+    if interview.status == SessionStatus.COMPLETED:
         raise HTTPException(status_code=400, detail="Интервью уже завершено")
     
     history = await message_service.get_interview_history(interview_id)
 
-    score,feedback = await interview_service.get_score_interview(history)
+    score,feedback,prep_plan,skill_scores = await interview_service.get_score_interview(history,interwiew)
 
-    await interview_service.finish_interview(interview_id, score)
+    await interview_service.finish_interview(interview_id, score, prep_plan,skill_scores)
     await message_service.add_message(interview_id, MessageRole.ASSISTANT, feedback)
 
     return {
         "status": "completed",
         "totalScore": score,
-        "feedback": feedback
+        "feedback": feedback,
+        "prepPlan": prep_plan,
+        "skill_scores": skill_scores
     }
 
 
@@ -291,7 +297,7 @@ async def answer_question(
 
         score,feedback = await interview_service.test_answer_finish(resume,message_history,interview)
 
-        await interview_service.finish_interview(interview_id, score)
+        await interview_service.finish_interview(interview_id, score, [], {})
         await message_service.add_message(interview_id, MessageRole.ASSISTANT, feedback)
 
         return {
@@ -319,14 +325,17 @@ async def finish_interview(
 
     score,feedback = await interview_service.test_get_score_interview(history)
 
-    await interview_service.finish_interview(interview_id, score)
+    await interview_service.finish_interview(interview_id, score, [], {})
     await message_service.add_message(interview_id, MessageRole.ASSISTANT, feedback)
 
     return {
         "status": "completed",
         "totalScore": score,
-        "feedback": feedback
+        "feedback": feedback,
+        "prepPlan": [],
+        "skill_scores": {}
     }
+
 
 #=============================ЭНДПОИНТЫ ДЛЯ ИНТЕРВЬЮ С ВАКАНСИЕЙ==============================#
 

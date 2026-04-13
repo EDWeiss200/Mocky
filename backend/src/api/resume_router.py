@@ -1,7 +1,8 @@
 from services.resume_services import ResumeServices
+from services.interview_services import InterviewServices
 from models.models import User,Resume
-from schemas.schemas import UserReadSchema, ResumeAnalysisResponse
-from api.dependencies import resume_service
+from schemas.schemas import UserReadSchema, ResumeAnalysisResponse,ResumeStatisticsResponse
+from api.dependencies import resume_service,interview_service
 from auth.auth import current_user
 from fastapi import APIRouter, Depends, UploadFile, File, HTTPException
 from fastapi_cache.decorator import cache
@@ -44,7 +45,7 @@ async def get_resumes_user(
 
     return resumes
 
-@router.post('/resume/{resume_id}/analyze', response_model=ResumeAnalysisResponse)
+@router.post('/{resume_id}/analyze', response_model=ResumeAnalysisResponse)
 async def analyze_resume_endpoint(
     resume_id: UUID,
     user: User = Depends(current_user),
@@ -60,3 +61,15 @@ async def analyze_resume_endpoint(
     
 
     return analysis_result
+
+
+@router.get('/{resume_id}/statistics', response_model=ResumeStatisticsResponse)
+async def get_resume_statistics(
+    resume_id: UUID,
+    user: User = Depends(current_user),
+    interview_service: InterviewServices = Depends(interview_service)
+):
+    stats = await interview_service.get_resume_stats(resume_id, user.id)
+    if not stats:
+        raise HTTPException(status_code=404, detail="Статистика пока не собрана. Пройдите хотя бы одно интервью!")
+    return stats
