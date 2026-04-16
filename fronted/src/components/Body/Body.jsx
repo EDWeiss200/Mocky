@@ -1,7 +1,7 @@
 import "./Body.css";
 import starsImage from "../../assets/img/starsgroup.svg";
 import sendIcon from "../../assets/img/send.svg";
-import logochat from "../../assets/img/starchat.svg";
+import logochat from "../../assets/img/logochat.svg";
 import PDfImage from "../../assets/img/pdfchat.svg";
 import firsteclipse from "../../assets/img/eclipse1.svg";
 import secondeclipse from "../../assets/img/eclipse2.svg";
@@ -107,6 +107,35 @@ const Body = () => {
       <div className="chat-pagination">
         <img src={firsteclipse} alt="dot" className="pj-dot" />
         <img src={secondeclipse} alt="dot" className="pj-dot" />
+      </div>
+      <div className="training-info-right">
+        <h2 className="training-title">
+          Тренируйся с <br /> современным ИИ
+        </h2>
+        <p className="training-subtitle">
+          Ошибайся, учись и закрывай проблемы в <br /> знаниях с умным ИИ
+          собеседником.
+        </p>
+
+        <div className="mini-cards-row">
+          {/* Карточка: Анализ резюме */}
+          <div className="mini-card bordered">
+            <h3 className="mini-card-title">Анализ резюме</h3>
+            <p className="mini-card-text">
+              ИИ разберёт резюме, выделит твои сильные и слабые места и
+              подскажет, на что обратить внимание.
+            </p>
+          </div>
+
+          {/* Карточка: Живой диалог */}
+          <div className="mini-card">
+            <h3 className="mini-card-title">живой диалог</h3>
+            <p className="mini-card-text">
+              Отвечай на вопросы ИИ, тренируй навыки устного технического
+              общения
+            </p>
+          </div>
+        </div>
       </div>
     </div>
   );

@@ -434,3 +434,67 @@
   width: 9px;
   height: 9px;
 }
+.main-interactive-section {
+  display: flex;
+  align-items: flex-start;
+  margin-left: 200px; /* Отступ всей группы от левого края */
+  gap: 100px;         /* Расстояние между чатом и текстом */
+}
+
+
+.training-info-right {
+  max-width: 600px;
+}
+
+.training-title {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-weight: 700;   /* Жирность 700 */
+  font-size: 64px;    /* Размер из макета */
+  line-height: 1.1;
+  color: #FFFFFF;
+  margin-bottom: 24px;
+}
+
+.training-subtitle {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-weight: 700;   /* Жирность 700 */
+  font-size: 24px;
+  color: #BEBEBE;
+  margin-bottom: 48px;
+}
+
+.mini-cards-row {
+  display: flex;
+  gap: 28px;          /* Расстояние между маленькими карточками */
+}
+
+.mini-card {
+  width: 280px;       /* Ширина из макета */
+  height: 250px;      /* Высота из макета */
+  background: #1A1A1A;
+  border-radius: 30px;
+  padding: 32px;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+}
+
+.mini-card.bordered {
+  border-top: 4px solid #5F47E7; /* Фиолетовая полоска сверху */
+}
+
+.mini-card-title {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-weight: 700;   /* Жирность 700 */
+  font-size: 24px;
+  color: #FFFFFF;
+  text-transform: uppercase;
+  margin-bottom: 16px;
+}
+
+.mini-card-text {
+  font-size: 16px;
+  line-height: 1.4;
+  color: #BEBEBE;
+  margin: 0;
+}
