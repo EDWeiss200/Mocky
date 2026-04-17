@@ -75,7 +75,7 @@ async def get_resume_statistics(
     return stats
 
 
-@router.delete('{resume_id}')
+@router.delete('/{resume_id}')
 async def delete_resume(
     resume_id: UUID,
     user: User = Depends(current_user),

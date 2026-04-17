@@ -3,7 +3,7 @@ import random
 from database.redis import redis_client_forgotpass
 from utils.worker import send_reset_code_email
 from auth.auth import password_helper
-from fastapi import HTTPException
+from fastapi import HTTPException,status
 
 class UserServices:
 
@@ -78,16 +78,30 @@ class UserServices:
 
     async def send_code_forgotpass(self,email):
 
+        cooldown_key = f"cooldown:forgot:{email}"
+
+        ttl = await redis_client_forgotpass.ttl(cooldown_key)
+        if ttl > 0:
+            raise HTTPException(
+                status_code=status.HTTP_429_TOO_MANY_REQUESTS,
+                detail=f"Слишком много запросов. Подожди {ttl} секунд перед новой отправкой."
+            )
+
         code = str(random.randint(100000,999999))
 
-        await redis_client_forgotpass.setex(f"reset_code:{email}", 900, code)
+        reset_key = f"reset_code:{email}"
 
-        # кидаем задачу в Celery: метод delay делает это асинхронно для FastAPI
+        await redis_client_forgotpass.setex(reset_key, 900, code)
+        await redis_client_forgotpass.setex(cooldown_key, 60, "1")
+
+
         send_reset_code_email.delay(email, code)
 
         return {"message": "Код отправлен на почту"}
     
     async def reset_password(self,user_id,code,new_password,email):
+
+        
 
         saved_code = await redis_client_forgotpass.get(f"reset_code:{email}")
     

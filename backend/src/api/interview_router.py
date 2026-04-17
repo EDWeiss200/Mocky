@@ -399,7 +399,7 @@ async def analyze_vacancy_gaps(
     return gaps
 
 
-@router.delete('{interview_id}')
+@router.delete('/{interview_id}')
 async def delete_interview(
     interview_id: UUID,
     interview_service: InterviewServices = Depends(interview_service)
