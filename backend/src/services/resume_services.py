@@ -152,6 +152,9 @@ class ResumeServices:
         except Exception as e:
             print(f"Ошибка API при аудите резюме: {e}")
             raise HTTPException(status_code=500, detail="Ошибка при обращении к ИИ")
+        
+
+    
 
     
     

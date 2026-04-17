@@ -10,7 +10,7 @@ from auth.manager import UserManager, get_user_manager
 from config import BOT_SECRET_TOKEN
 import uuid
 import secrets
-from database.redis import redis_client
+from database.redis import redis_client_tgtoken
 from config import BOT_NAME
 
 router = APIRouter(
@@ -57,7 +57,7 @@ async def generate_link(
     user: User = Depends(current_user)
 ):
     
-    existing_token = await redis_client.get(f"user_tg_token:{user.id}")
+    existing_token = await redis_client_tgtoken.get(f"user_tg_token:{user.id}")
 
     if existing_token:
 
@@ -67,9 +67,9 @@ async def generate_link(
         token = secrets.token_urlsafe(8)
         
 
-        await redis_client.setex(f"tg_link:{token}", 600, str(user.id))
+        await redis_client_tgtoken.setex(f"tg_link:{token}", 600, str(user.id))
 
-        await redis_client.setex(f"user_tg_token:{user.id}", 600, token)
+        await redis_client_tgtoken.setex(f"user_tg_token:{user.id}", 600, token)
 
     link = f"https://t.me/{BOT_NAME}?start={token}"
 
@@ -89,7 +89,7 @@ async def confirm_link(
     if x_bot_token != BOT_SECRET_TOKEN:
         raise HTTPException(status_code=403, detail = "Доступ запрещен")
     
-    user_id_str = await redis_client.get(f"tg_link:{data.token}")
+    user_id_str = await redis_client_tgtoken.get(f"tg_link:{data.token}")
 
     if not user_id_str:
         raise HTTPException(status_code=400, detail="Токен устарел или не существует")
@@ -98,8 +98,8 @@ async def confirm_link(
 
     await user_service.update_telegram_id(user_id, data.telegram_id)
 
-    await redis_client.delete(f"tg_link:{data.token}")
-    await redis_client.delete(f"user_tg_token:{user_id}")
+    await redis_client_tgtoken.delete(f"tg_link:{data.token}")
+    await redis_client_tgtoken.delete(f"user_tg_token:{user_id}")
 
     return{
         "status": "success",

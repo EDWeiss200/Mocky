@@ -73,3 +73,15 @@ async def get_resume_statistics(
     if not stats:
         raise HTTPException(status_code=404, detail="Статистика пока не собрана. Пройдите хотя бы одно интервью!")
     return stats
+
+
+@router.delete('{resume_id}')
+async def delete_resume(
+    resume_id: UUID,
+    user: User = Depends(current_user),
+    resume_service: ResumeServices = Depends(resume_service)
+):
+    resume_id = await resume_service.delete_resume(resume_id)
+
+    return resume_id
+

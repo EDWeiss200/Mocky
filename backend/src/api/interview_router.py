@@ -23,6 +23,21 @@ router = APIRouter(
     prefix='/interviews'
 )
 
+
+
+@router.get('/{interview_id}')
+async def get_interview(
+    interview_id: UUID,
+    user: User = Depends(current_user),
+    interview_service: InterviewServices = Depends(interview_service)
+):
+    interview_id = await interview_service.get_interview(interview_id)
+
+    return interview_id
+
+
+
+
 @router.post('/start')
 async def start_interview(
     req: StartInterviewRequest,
@@ -192,7 +207,7 @@ async def finish_interview(
     
     history = await message_service.get_interview_history(interview_id)
 
-    score,feedback,prep_plan,skill_scores = await interview_service.get_score_interview(history,interwiew)
+    score,feedback,prep_plan,skill_scores = await interview_service.get_score_interview(history,interview)
 
     await interview_service.finish_interview(interview_id, score, prep_plan,skill_scores)
     await message_service.add_message(interview_id, MessageRole.ASSISTANT, feedback)
@@ -323,7 +338,7 @@ async def finish_interview(
     
     history = await message_service.get_interview_history(interview_id)
 
-    score,feedback = await interview_service.test_get_score_interview(history)
+    score,feedback = await interview_service.test_get_score_interview(history,interwiew)
 
     await interview_service.finish_interview(interview_id, score, [], {})
     await message_service.add_message(interview_id, MessageRole.ASSISTANT, feedback)
@@ -382,3 +397,13 @@ async def analyze_vacancy_gaps(
     gaps = await interview_service.analyze_gaps(resume, vacancy_data)
     
     return gaps
+
+
+@router.delete('{interview_id}')
+async def delete_interview(
+    interview_id: UUID,
+    interview_service: InterviewServices = Depends(interview_service)
+):
+    interview_id = await interview_service.delete_interview(interview_id)
+
+    return interview_id

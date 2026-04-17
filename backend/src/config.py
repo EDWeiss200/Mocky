@@ -30,10 +30,16 @@ REDIS_PORT = os.environ.get("REDIS_PORT")
 
 REDIS_URL_TGTOKEN = f"redis://{REDIS_HOST}:{REDIS_PORT}/1"
 REDIS_URL_CACHE = f"redis://{REDIS_HOST}:{REDIS_PORT}/0"
+REDIS_URL_FORGOTPASS = f"redis://{REDIS_HOST}:{REDIS_PORT}/2"
 
 BOT_NAME = os.environ.get("BOT_NAME")
 
 GITHUB_CLIENT_ID = os.environ.get("GITHUB_CLIENT_ID")
 GITHUB_CLIENT_SECRET = os.environ.get("GITHUB_CLIENT_SECRET")
+
+SMTP_USER = os.environ.get("SMTP_USER")
+SMTP_PASS = os.environ.get("SMTP_PASS")
+SMTP_HOST = os.environ.get("SMTP_HOST")
+SMTP_PORT = os.environ.get("SMTP_PORT")
 
 MYMAIL = os.environ.get("MYMAIL")

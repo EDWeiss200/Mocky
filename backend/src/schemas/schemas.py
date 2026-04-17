@@ -136,3 +136,8 @@ class ResumeStatisticsResponse(BaseModel):
     score_dynamics: List[ChartPoint]
     top_recommendations: List[str]
     radar_data: dict[str, int]
+
+class ResetPasswordRequest(BaseModel):
+    email: EmailStr
+    code: str
+    new_password: str

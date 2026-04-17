@@ -22,6 +22,14 @@ class InterviewServices:
     def __init__(self,interview_repo: AbstractRepository) -> None:
         self.interview_repo = interview_repo()
 
+
+    async def delete_interview(self,interview_id):
+
+        id = await self.interview_repo.delete_one(interview_id)
+
+        return id
+    
+
     async def get_interview(self,interview_id):
 
         filters = [
@@ -429,7 +437,7 @@ class InterviewServices:
         return score, feedback, prep_plan,skills_score
     
 
-    async def test_get_score_interview(self,history):
+    async def test_get_score_interview(self,history,interview):
 
         score = 50
 
