@@ -40,7 +40,7 @@ class Backend_Client():
             print(f"Ошибка логина {response.status}: {await response.text()}")
             return False
 
-    async def confirm_link(self, telegram_id: int, token: str):
+    async def confirm_link(self, telegram_id: str, token: str):
         url = f"{self.base_url}/telegram/link/confirm"
         
         headers = {
@@ -49,7 +49,7 @@ class Backend_Client():
         }
         
         payload = {
-            "telegram_id": int(telegram_id),
+            "telegram_id": str(telegram_id),
             "token": token
         }
 
@@ -76,11 +76,26 @@ class Backend_Client():
                 return resume_id
             return None
 
+    
+    async def answer_voice(self, user_id: int, file_bytes: bytes, file_name: str, interview_id: str):
+        headers = await self._get_auth_headers(user_id)
+        data = aiohttp.FormData()
+        data.add_field('file', file_bytes, filename=file_name, content_type='audio/mpeg')
+        url = f'{self.base_url}/interviews/answer/voice/{interview_id}'
+        async with self.session.post(url, data=data, headers=headers) as response:
+            if response.status == 200:
+                return await response.json()
+            return None
+            
 
-    async def start_interview(self, telegram_id: int, resume_id: str):
+    async def start_interview(self, telegram_id: int, resume_id: str, number_questions: int = 5, role: str = "pragmatic_lead"):
         url = f"{self.base_url}/interviews/start"
         headers = await self._get_auth_headers(telegram_id)
-        payload = {"resumeId": resume_id}
+        payload = {
+            "resumeId": resume_id,
+            "numberQuestion": number_questions,
+            "role": role
+        }
         
         async with self.session.post(url, json=payload, headers=headers) as response:
             if response.status == 200:
