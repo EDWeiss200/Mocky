@@ -1,2 +1,3 @@
 backend/src/.env
 __pycache__/
+.VSCodeCounter/
