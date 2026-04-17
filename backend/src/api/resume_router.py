@@ -17,6 +17,7 @@ router = APIRouter(
 
 @router.post('/upload')
 async def upload_resume(
+    resume_name: str | None = None,
     file: UploadFile = File(...),
     user: User = Depends(current_user),
     resume_service: ResumeServices = Depends(resume_service)
@@ -29,7 +30,7 @@ async def upload_resume(
             detail=f"Неподдерживаемый формат. Разрешены: {', '.join(ALLOWED_EXTENSIONS)}"
         )
 
-    res = await resume_service.upload_resume(file,user)
+    res = await resume_service.upload_resume(file,user,resume_name)
     return res
 
 

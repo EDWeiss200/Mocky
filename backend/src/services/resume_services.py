@@ -25,7 +25,7 @@ class ResumeServices:
 
    
 
-    async def upload_resume(self,file: File,user):
+    async def upload_resume(self,file: File,user,resume_name):
 
         if file.content_type != "application/pdf":
             raise HTTPException(status_code=400, detail="Разрешены только PDF файлы")
@@ -47,6 +47,7 @@ class ResumeServices:
 
             new_resume = {
                 'user_id':user.id,
+                "name":resume_name,
                 'raw_text':extracted_text.strip()
             }
             

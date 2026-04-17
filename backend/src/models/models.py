@@ -61,6 +61,7 @@ class User(SQLAlchemyBaseUserTableUUID, Base):
 class Resume(Base):
     __tablename__ = "resumes"
     id: Mapped[uuidpk]
+    name: Mapped[str | None] = mapped_column(Text)
     user_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("users.id"))
     raw_text: Mapped[str] = mapped_column(Text)
     created_at: Mapped[datetime] = mapped_column(
@@ -73,7 +74,7 @@ class Interview(Base):
     __tablename__ = "interviews"
     id: Mapped[uuidpk]
     user_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("users.id"))
-    resume_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("resumes.id"))
+    resume_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("resumes.id", ondelete="CASCADE"))
     vacancy_context: Mapped[str | None] = mapped_column(Text, nullable=True)
     role: Mapped[str] = mapped_column(String, default="pragmatic_lead")
     number_question: Mapped[Optional[int] | 5] = mapped_column(Integer)
