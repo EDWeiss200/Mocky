@@ -42,6 +42,12 @@ class User(SQLAlchemyBaseUserTableUUID, Base):
     oauth_accounts: Mapped[List[OAuthAccount]] = relationship(
         "OAuthAccount", lazy="joined", cascade="all, delete-orphan"
     )
+
+    balance: Mapped[int] = mapped_column(Integer,default=0) 
+    subscription_tier: Mapped[str] = mapped_column(String,default="free")
+    subscription_expiries_at: Mapped[datetime] = mapped_column(nullable=True)   
+    sprint_voice_used: Mapped[int] = mapped_column(Integer,default=0) 
+
     is_active: Mapped[bool] = mapped_column(Boolean, default=True, nullable=False)
     is_superuser: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
     is_verified: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)

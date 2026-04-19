@@ -43,3 +43,7 @@ SMTP_HOST = os.environ.get("SMTP_HOST")
 SMTP_PORT = os.environ.get("SMTP_PORT")
 
 MYMAIL = os.environ.get("MYMAIL")
+
+
+YOOKASSA_SHOP_ID = os.environ.get("YOOKASSA_SHOP_ID")
+YOOKASSA_SECRET_KEY = os.environ.get("YOOKASSA_SECRET_KEY")

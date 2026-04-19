@@ -14,6 +14,23 @@ from services.telegram_services import TelegramService
 
 from services.HeadHunter_services import HeadHunterService
 
+from fastapi import HTTPException
+from datetime import datetime, timezone
+from models.models import User
+
+async def verify_balance(user: User, cost: int):
+
+    if user.subscription_tier != "free" and user.subscription_expires_at:
+        if user.subscription_expires_at.replace(tzinfo=timezone.utc) > datetime.now(timezone.utc):
+            return True 
+
+    if user.balance >= cost:
+        return True
+        
+    raise HTTPException(
+        status_code=402, 
+        detail="Не хватает токенов или нужна подписка"
+    )
 
 
 def user_service() -> UserServices:

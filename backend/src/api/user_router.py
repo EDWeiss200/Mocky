@@ -81,4 +81,13 @@ async def reset_password(
     res = await user_service.reset_password(user.id,data.code,data.new_password,data.email)
 
     return res
-    
+
+
+@router.get('/balance')
+async def get_balance_info(
+    user: User = Depends(current_user),
+    user_service: UserServices = Depends(user_service)
+):
+    res = await user_service.get_balance_info(user)
+
+    return res

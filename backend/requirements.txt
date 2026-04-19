@@ -16,3 +16,4 @@ httpx-oauth
 jinja2
 httpx
 celery
+yookassa

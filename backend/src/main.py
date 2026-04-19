@@ -10,6 +10,7 @@ from api.resume_router import router as resume_router
 from api.interview_router import router as interview_router
 from api.message_router import router as message_router
 from api.telegram_router import router as telegram_router
+from api.payment_router import router as payment_router
 
 from contextlib import asynccontextmanager
 
@@ -90,6 +91,7 @@ app.include_router(resume_router)
 app.include_router(interview_router)
 app.include_router(message_router)
 app.include_router(telegram_router)
+app.include_router(payment_router)
 
 
 if __name__ == "__main__":

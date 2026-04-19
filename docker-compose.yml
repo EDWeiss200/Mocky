@@ -52,6 +52,18 @@ services:
     networks:
       - dev
 
+  celery_beat:
+    build: ./backend
+    working_dir: /app/src
+    command: celery -A utils.worker.celery beat --loglevel=info
+    volumes:
+      - ./backend:/app
+    depends_on:
+      - redis
+      - db
+    networks:
+      - dev
+
   flower:
     build: ./backend
     working_dir: /app/src

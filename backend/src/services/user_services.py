@@ -4,6 +4,10 @@ from database.redis import redis_client_forgotpass
 from utils.worker import send_reset_code_email
 from auth.auth import password_helper
 from fastapi import HTTPException,status
+from datetime import datetime, timezone,timedelta
+from models.enum import Feature,FEATURE_COSTS
+from models.models import User
+import uuid
 
 class UserServices:
 
@@ -119,6 +123,76 @@ class UserServices:
         await redis_client_forgotpass.delete(f"reset_code:{email}")
 
         return {"message": "Пароль успешно изменен"}
+    
+
+    async def charge_for_feature(self, user: User, feature: Feature):
+        now = datetime.now(timezone.utc)
+        is_pro = user.subscription_tier == "pro" and user.subscription_expires_at and user.subscription_expires_at.replace(tzinfo=timezone.utc) > now
+        is_sprint = user.subscription_tier == "sprint" and user.subscription_expires_at and user.subscription_expires_at.replace(tzinfo=timezone.utc) > now
+
+        if is_pro:
+            return 
+
+        if is_sprint:
+            if feature in [Feature.RESUME_ANALYZE, Feature.GAP_ANALYZE, Feature.INTERVIEW_TEXT]:
+                return 
+            if feature == Feature.INTERVIEW_VOICE:
+
+                data_to_update = {
+                    "sprint_voice_used" : user.sprint_voice_used + 1
+                }
+
+                await self.user_repo.update(user.id,data_to_update)
+                return
+
+        # если мы дошли сюда, значит это токены
+        cost = FEATURE_COSTS.get(feature, 0)
+        data_to_update = {
+            "balance" : user.balance- cost
+        }
+        await self.user_repo.update(user.id,data_to_update)
+
+
+    async def get_balance_info(self,user: User):
+
+        user_token = user.balance
+        user_tariff = user.subscription_tier
+
+        subscription_expiries_at = user.subscription_expiries_at
+
+        return {
+            "user_token": user_token,
+            "user_tariff": user_tariff,
+            "subscription_expiries_at": subscription_expiries_at,
+        }
+    
+
+
+    async def process_successful_payment(self, user_id: str, tariff: str, amount: int):
+
+        user = await self.get_user_by_id(user_id)
+        if not user:
+            return
+
+        now = datetime.now(timezone.utc)
+
+        if tariff.startswith("tokens"):
+
+            user.balance += amount
+            
+        elif tariff == "sprint":
+            # активируем спринт на 3 дня и сбрасываем счетчик голоса
+            user.subscription_tier = "sprint"
+            user.subscription_expires_at = now + timedelta(days=3)
+            user.sprint_voice_used = 0 
+            
+        elif tariff == "pro":
+            # активируем PRO на 30 дней
+            user.subscription_tier = "pro"
+            user.subscription_expires_at = now + timedelta(days=30)
+
+        # сохраняем обновленного юзера в базу
+        await self.user_repo.update(user)
 
 
 

@@ -141,3 +141,5 @@ class ResetPasswordRequest(BaseModel):
     email: EmailStr
     code: str
     new_password: str
+
+

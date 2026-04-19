@@ -27,12 +27,20 @@ class ResumeServices:
 
     async def upload_resume(self,file: File,user,resume_name):
 
+        MAX_FILE_SIZE = 20 * 1024 * 1024
+
         if file.content_type != "application/pdf":
             raise HTTPException(status_code=400, detail="Разрешены только PDF файлы")
 
         try:
             # читаем файл прямо в оперативной памяти
             content = await file.read()
+
+            if len(content) > MAX_FILE_SIZE:
+                raise HTTPException(
+                    status_code=400,
+                    detail="Файл слишком большой. Максимальный размер: 20 МБ"
+                )
 
             extracted_text = await asyncio.to_thread(extract_text_from_pdf_sync, content)
             

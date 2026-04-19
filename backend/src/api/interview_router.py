@@ -2,18 +2,22 @@ from services.interview_services import InterviewServices
 from services.resume_services import ResumeServices
 from services.message_services import MessageServices
 from services.HeadHunter_services import HeadHunterService
+from services.user_services import UserServices
 from models.models import User,Resume,MessageRole
 from schemas.schemas import UserReadSchema, StartInterviewRequest, AnswerRequest, SessionStatus, StartHHInterviewRequest, GapAnalysisResponse
 from api.dependencies import interview_service
 from api.dependencies import resume_service
 from api.dependencies import message_service
 from api.dependencies import headhunter_service
+from api.dependencies import user_service
 from auth.auth import current_user
 from fastapi import APIRouter, Depends, UploadFile, File, HTTPException
 from api.user_router import user_key_builder
 from fastapi_cache.decorator import cache
 from uuid import UUID
 from pydantic import HttpUrl
+from utils.verify_balance import VerifyBalance
+from models.enum import Feature
 
 
 
@@ -41,15 +45,18 @@ async def get_interview(
 @router.post('/start')
 async def start_interview(
     req: StartInterviewRequest,
-    user: User = Depends(current_user),
+    user: User = Depends(VerifyBalance(Feature.INTERVIEW_TEXT)),
     interview_service: InterviewServices = Depends(interview_service),
     resume_service: ResumeServices = Depends(resume_service),
-    message_service: MessageServices = Depends(message_service)
+    message_service: MessageServices = Depends(message_service),
+    user_service: UserServices = Depends(user_service)
     
 ):
     resume = await resume_service.get_resume(req.resume_id,user.id)
     interview_id,first_question = await interview_service.start_interview(resume,user.id,req.role,req.number_question)
     message_id = await message_service.add_message(interview_id,MessageRole.ASSISTANT,first_question)
+
+    await user_service.charge_for_feature(user, Feature.INTERVIEW_TEXT)
 
     return {
         "interviewId": interview_id,
@@ -68,10 +75,11 @@ async def start_interview(
 async def answer_question(
     interview_id: UUID,
     req: AnswerRequest,
-    user: User = Depends(current_user),
+    user: User = Depends(VerifyBalance(Feature.INTERVIEW_TEXT)),
     interview_service: InterviewServices = Depends(interview_service),
     resume_service: ResumeServices = Depends(resume_service),
-    message_service: MessageServices = Depends(message_service)
+    message_service: MessageServices = Depends(message_service),
+    user_service: UserServices = Depends(user_service)
 ):
 
 
@@ -90,6 +98,9 @@ async def answer_question(
 
         ai_reply = await interview_service.answer(resume,message_history,interview)
         message_id = await message_service.add_message(interview_id,MessageRole.ASSISTANT,ai_reply)
+
+        await user_service.charge_for_feature(user, Feature.INTERVIEW_TEXT)
+
         return {
             "reply": ai_reply,
             "messageId": message_id
@@ -101,6 +112,8 @@ async def answer_question(
 
         await interview_service.finish_interview(interview_id, score, prep_plan,skill_scores)
         await message_service.add_message(interview_id, MessageRole.ASSISTANT, feedback)
+
+        await user_service.charge_for_feature(user, Feature.INTERVIEW_TEXT)
 
         return {
             "status": "completed",
@@ -119,10 +132,11 @@ async def answer_question(
 async def answer_question_voice(
     interview_id: UUID,
     file: UploadFile = File(...), 
-    user: User = Depends(current_user),
+    user: User = Depends(VerifyBalance(Feature.INTERVIEW_VOICE)),
     interview_service: InterviewServices = Depends(interview_service),
     resume_service: ResumeServices = Depends(resume_service),
-    message_service: MessageServices = Depends(message_service)
+    message_service: MessageServices = Depends(message_service),
+    user_service: UserServices = Depends(user_service)
 ):
 
 
@@ -166,6 +180,9 @@ async def answer_question_voice(
 
         ai_reply = await interview_service.answer(resume,message_history,interview)
         message_id = await message_service.add_message(interview_id,MessageRole.ASSISTANT,ai_reply)
+
+        await user_service.charge_for_feature(user, Feature.INTERVIEW_VOICE)
+
         return {
             "reply": ai_reply,
             "messageId": message_id
@@ -177,6 +194,8 @@ async def answer_question_voice(
 
         await interview_service.finish_interview(interview_id, score,prep_plan,skill_scores)
         await message_service.add_message(interview_id, MessageRole.ASSISTANT, feedback)
+
+        await user_service.charge_for_feature(user, Feature.INTERVIEW_VOICE)
 
         return {
             "status": "completed",
@@ -194,9 +213,10 @@ async def answer_question_voice(
 @router.post("/finish/{interview_id}")
 async def finish_interview(
     interview_id: UUID,
-    user: User = Depends(current_user),
+    user: User = Depends(VerifyBalance(Feature.INTERVIEW_TEXT)),
     interview_service: InterviewServices = Depends(interview_service),
-    message_service: MessageServices = Depends(message_service)
+    message_service: MessageServices = Depends(message_service),
+    user_service: UserServices = Depends(user_service)
 ):
     interview = await interview_service.get_interview(interview_id)
     if not interview or interview.user_id != user.id:
@@ -211,6 +231,8 @@ async def finish_interview(
 
     await interview_service.finish_interview(interview_id, score, prep_plan,skill_scores)
     await message_service.add_message(interview_id, MessageRole.ASSISTANT, feedback)
+
+    await user_service.charge_for_feature(user, Feature.INTERVIEW_TEXT)
 
     return {
         "status": "completed",
@@ -357,11 +379,12 @@ async def finish_interview(
 @router.post("/start/hh")
 async def start_hh_interview_endpoint(
     req: StartHHInterviewRequest,
-    user: User = Depends(current_user),
+    user: User = Depends(VerifyBalance(Feature.INTERVIEW_TEXT)),
     interview_service: InterviewServices = Depends(interview_service),
     headhunter_service: HeadHunterService = Depends(headhunter_service),
     resume_service: ResumeServices = Depends(resume_service),
-    message_service: MessageServices = Depends(message_service)
+    message_service: MessageServices = Depends(message_service),
+    user_service: UserServices = Depends(user_service)
 ):
     
     resume = await resume_service.get_resume(req.resume_id, user.id)
@@ -371,6 +394,8 @@ async def start_hh_interview_endpoint(
     interview_id, first_question = await interview_service.start_hh_interview(resume, vacancy_data, user.id,req.role,req.number_question)
     
     message_id = await message_service.add_message(interview_id, MessageRole.ASSISTANT, first_question)
+
+    await user_service.charge_for_feature(user, Feature.INTERVIEW_TEXT)
 
     return {
         "interviewId": interview_id,
@@ -382,9 +407,10 @@ async def start_hh_interview_endpoint(
 @router.post('/analyze_vacancy', response_model=GapAnalysisResponse)
 async def analyze_vacancy_gaps(
     req: StartHHInterviewRequest,
-    user: User = Depends(current_user),
+    user: User = Depends(VerifyBalance(Feature.GAP_ANALYZE)),
     interview_service: InterviewServices = Depends(interview_service),
-    resume_service: ResumeServices = Depends(resume_service)
+    resume_service: ResumeServices = Depends(resume_service),
+    user_service: UserServices = Depends(user_service)
 ):
     resume = await resume_service.get_resume(req.resume_id, user.id)
     if not resume:
@@ -395,6 +421,8 @@ async def analyze_vacancy_gaps(
     
     # запускаем анализ
     gaps = await interview_service.analyze_gaps(resume, vacancy_data)
+
+    await user_service.charge_for_feature(user, Feature.GAP_ANALYZE)
     
     return gaps
 
