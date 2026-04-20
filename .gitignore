@@ -2,3 +2,6 @@
 app/.env
 __pycache__/
 *.pyc
+backend/src/.env
+__pycache__/
+
