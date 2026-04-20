@@ -43,7 +43,7 @@ class User(SQLAlchemyBaseUserTableUUID, Base):
         "OAuthAccount", lazy="joined", cascade="all, delete-orphan"
     )
 
-    balance: Mapped[int] = mapped_column(Integer,default=0) 
+    balance: Mapped[int] = mapped_column(Integer,default=50) 
     subscription_tier: Mapped[str] = mapped_column(String,default="free")
     subscription_expiries_at: Mapped[datetime] = mapped_column(nullable=True)   
     sprint_voice_used: Mapped[int] = mapped_column(Integer,default=0) 
