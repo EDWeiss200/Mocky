@@ -74,10 +74,12 @@ async def show_active_interviews(message: types.Message, api, state: FSMContext)
         date_label = format_date(raw_date) if raw_date else f"ID: {i_id[:8]}"
         
         text += f"{i}. 🗓 {date_label} (🆔 `{i_id[:8]}`)\n"
-        builder.button(text=f"{i}", callback_data=f"sel_int:{i_id}")
+        builder.row(
+            types.InlineKeyboardButton(text=f"Продолжить {i}", callback_data=f"sel_int:{i_id}"),
+            types.InlineKeyboardButton(text="❌ Удалить", callback_data=f"del_int:{i_id}")
+        )
     
-    builder.adjust(5)
-    text += "\nВыберите номер сессии, чтобы продолжить."
+    text += "\nВыберите сессию, чтобы продолжить или удалить."
     
     await message.answer(text, parse_mode="Markdown", reply_markup=builder.as_markup())
 
@@ -163,10 +165,12 @@ async def show_completed_interviews(event: types.Message | types.CallbackQuery, 
         
         date_str = format_date(created_at) if created_at else f"ID: {i_id[:8]}"
         text += f"{i}. 🗓 {date_str} — ⭐ **{score}** (🆔 `{i_id[:8]}`)\n"
-        builder.button(text=f"{i}", callback_data=f"view_archive:{i_id}")
+        builder.row(
+            types.InlineKeyboardButton(text=f"Посмотреть {i}", callback_data=f"view_archive:{i_id}"),
+            types.InlineKeyboardButton(text="❌ Удалить", callback_data=f"del_int:{i_id}")
+        )
         
-    builder.adjust(5)
-    text += "\nНажмите на номер, чтобы посмотреть подробный фидбэк."
+    text += "\nНажмите на кнопку, чтобы посмотреть фидбэк или удалить запись."
     
     if isinstance(event, types.Message):
         await event.answer(text, parse_mode="Markdown", reply_markup=builder.as_markup())
@@ -257,3 +261,15 @@ async def handle_show_history(callback: types.CallbackQuery, api):
 async def process_back_to_completed(callback: types.CallbackQuery, api, state: FSMContext):
     await callback.answer()
     await show_completed_interviews(callback, api, state)
+
+
+@router.callback_query(F.data.startswith("del_int:"))
+async def process_delete_interview(callback: types.CallbackQuery, api):
+    interview_id = callback.data.split(":")[1]
+    
+    success = await api.delete_interview(callback.from_user.id, interview_id)
+    if success:
+        await callback.answer("✅ Сессия удалена!", show_alert=True)
+        await callback.message.delete()
+    else:
+        await callback.answer("❌ Ошибка при удалении.", show_alert=True)
