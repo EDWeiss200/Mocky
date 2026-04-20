@@ -119,21 +119,31 @@ async def cmd_prepare_interview(message: types.Message, state: FSMContext, api):
     async with ChatActionSender.typing(bot=message.bot, chat_id=message.chat.id):
         interview_data = await api.start_interview(message.from_user.id, resume_id, q_count, role)
     
-    if interview_data and interview_data.get("id"):
-        await state.set_state(InterviewProcess.interviewing)
-        await state.update_data(
-            interview_id=interview_data.get("id"),
-            answer_count=0
-        )
+    if interview_data:
+        if isinstance(interview_data, dict) and interview_data.get("error") == "payment_required":
+            return await message.answer(
+                "⚠️ **Недостаточно токенов!**\n\n"
+                "На вашем аккаунте закончились токены для проведения интервью. "
+                "Пожалуйста, пополните баланс в личном кабинете на сайте.",
+                parse_mode="Markdown"
+            )
         
-        await message.answer(
-            f"🚀 **Интервью началось!**\n\n"
-            f"**Вопрос 1 из 5:**\n\n{interview_data.get('text')}",
-            parse_mode="Markdown",
-            reply_markup=get_main_menu(is_interviewing=True)
-        )
-    else:
-        await message.answer("❌ Ошибка при создании сессии. Проверьте соединение с сервером.")
+        if interview_data.get("id"):
+            await state.set_state(InterviewProcess.interviewing)
+            await state.update_data(
+                interview_id=interview_data.get("id"),
+                answer_count=0
+            )
+            
+            await message.answer(
+                f"🚀 **Интервью началось!**\n\n"
+                f"**Вопрос 1 из {q_count}:**\n\n{interview_data.get('text')}",
+                parse_mode="Markdown",
+                reply_markup=get_main_menu(is_interviewing=True)
+            )
+            return
+            
+    await message.answer("❌ Ошибка при создании сессии. Проверьте соединение с сервером.")
 
 
 async def start_actual_interview(message, state, api, resume_id):
@@ -143,6 +153,13 @@ async def start_actual_interview(message, state, api, resume_id):
     
     interview_data = await api.start_interview(message.from_user.id, resume_id, q_count, role)
     if interview_data:
+        if isinstance(interview_data, dict) and interview_data.get("error") == "payment_required":
+            return await message.answer(
+                "⚠️ **Недостаточно токенов!**\n\n"
+                "На вашем аккаунте закончились токены. Пожалуйста, пополните баланс на сайте.",
+                parse_mode="Markdown"
+            )
+            
         await state.update_data(interview_id=interview_data.get("id"))
         await state.set_state(InterviewProcess.interviewing)
         await message.answer(
@@ -168,7 +185,7 @@ async def handle_interview_answer(message: types.Message, state: FSMContext, api
     user_data = await state.get_data()
     interview_id = user_data.get("interview_id")
     answer_count = user_data.get("answer_count", 0)
-    total_questions = 5
+    total_questions = user_data.get("questions_count", 5)
 
     async with ChatActionSender.typing(bot=message.bot, chat_id=message.chat.id):
         try:
@@ -183,6 +200,16 @@ async def handle_interview_answer(message: types.Message, state: FSMContext, api
 
     if not response:
         return await message.answer("❌ Ошибка связи с сервером.")
+
+    if isinstance(response, dict) and response.get("error") == "payment_required":
+        await state.set_state(None)
+        return await message.answer(
+            "⚠️ **Лимит токенов исчерпан.**\n\n"
+            "К сожалению, интервью прервано, так как у вас закончились токены. "
+            "Пожалуйста, пополните баланс.",
+            parse_mode="Markdown",
+            reply_markup=get_main_menu(False)
+        )
 
     if "score" in response:
         score = response.get("score", 0)
@@ -218,7 +245,7 @@ async def handle_voice_message(message: types.Message, state: FSMContext, api):
     user_data = await state.get_data()
     interview_id = user_data.get("interview_id")
     answer_count = user_data.get("answer_count", 0)
-    total_questions = 5
+    total_questions = user_data.get("questions_count", 5)
 
     async with ChatActionSender.typing(bot=message.bot, chat_id=message.chat.id):
         file = await message.bot.get_file(message.voice.file_id)
@@ -253,6 +280,16 @@ async def handle_voice_message(message: types.Message, state: FSMContext, api):
 
     if not response:
         return await message.answer("❌ Ошибка связи с сервером.")
+
+    if isinstance(response, dict) and response.get("error") == "payment_required":
+        await state.set_state(None)
+        return await message.answer(
+            "⚠️ **Лимит токенов исчерпан.**\n\n"
+            "К сожалению, интервью прервано, так как у вас закончились токены. "
+            "Пожалуйста, пополните баланс.",
+            parse_mode="Markdown",
+            reply_markup=get_main_menu(False)
+        )
 
     if "score" in response:
         score = response.get("score", 0)

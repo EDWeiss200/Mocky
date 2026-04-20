@@ -1,5 +1,6 @@
 from config import config
 import aiohttp
+import logging
 from redis.asyncio import Redis
 
 class Backend_Client():
@@ -37,7 +38,7 @@ class Backend_Client():
                     clean_cookie = set_cookie.split(';')[0]
                     await self.redis.set(f"auth_sid:{telegram_id}", clean_cookie, ex=86400)
                 return True
-            print(f"Ошибка логина {response.status}: {await response.text()}")
+            logging.error(f"Ошибка логина {response.status}: {await response.text()}")
             return False
 
     async def confirm_link(self, telegram_id: str, token: str):
@@ -74,6 +75,8 @@ class Backend_Client():
                 result = await response.json()
                 resume_id = result.get("resumeId") 
                 return resume_id
+            if response.status == 402:
+                return {"error": "payment_required"}
             return None
 
     
@@ -100,22 +103,25 @@ class Backend_Client():
         async with self.session.post(url, json=payload, headers=headers) as response:
             if response.status == 200:
                 data = await response.json()
-                print(f"DEBUG Start Interview Response: {data}")
                 return {
                     "id": data.get("interviewId"),
                     "text": data.get("firstQuestion")
                 }
+            if response.status == 402:
+                return {"error": "payment_required"}
             return None
         
 
     async def send_message(self, user_id: int, answerText: str, interview_id: str):
-        url = f"{self.base_url}/interviews/TEST/answer/{interview_id}"
+        url = f"{self.base_url}/interviews/answer/{interview_id}"
         payload = {"answerText": answerText}
         headers = await self._get_auth_headers(user_id) 
         
         async with self.session.post(url, json=payload, headers=headers) as response:
             if response.status == 200:
                 return await response.json() 
+            if response.status == 402:
+                return {"error": "payment_required"}
             return None
                         
 
@@ -131,8 +137,8 @@ class Backend_Client():
                     "totalScore": data.get("total_score", 0),
                     "feedback": data.get("feedback", "Анализ не сформирован")
                 }
-            print(f"Ошибка API finish: {response.status}")
-            return None
+            logging.error(f"Ошибка API finish: {response.status}")
+            return False
         
         
     async def get_active_interviews(self, telegram_id: int):
@@ -170,3 +176,28 @@ class Backend_Client():
             if response.status == 200:
                 return await response.json()
             return []
+
+    async def analyze_resume(self, telegram_id: int, resume_id: str):
+        url = f"{self.base_url}/resumes/{resume_id}/analyze"
+        headers = await self._get_auth_headers(telegram_id)
+        
+        async with self.session.post(url, headers=headers) as response:
+            if response.status == 200:
+                return await response.json()
+            if response.status == 402:
+                return {"error": "payment_required"}
+            return None
+
+    async def delete_resume(self, telegram_id: int, resume_id: str):
+        url = f"{self.base_url}/resumes/{resume_id}"
+        headers = await self._get_auth_headers(telegram_id)
+        
+        async with self.session.delete(url, headers=headers) as response:
+            return response.status in [200, 204]
+
+    async def delete_interview(self, telegram_id: int, interview_id: str):
+        url = f"{self.base_url}/interviews/{interview_id}"
+        headers = await self._get_auth_headers(telegram_id)
+        
+        async with self.session.delete(url, headers=headers) as response:
+            return response.status in [200, 204]

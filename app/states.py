@@ -29,7 +29,8 @@ def get_main_menu(is_interviewing: bool = False):
         keyboard=[
             [KeyboardButton(text="🚀 Начать интервью")],
             [KeyboardButton(text="📂 Мои резюме"), KeyboardButton(text="📊 Мои интервью")],
-            [KeyboardButton(text="📊 Активные сессии"), KeyboardButton(text="❓ Помощь")]
+            [KeyboardButton(text="📊 Активные сессии"), KeyboardButton(text="📄 Анализ резюме")],
+            [KeyboardButton(text="❓ Помощь")]
         ],
         resize_keyboard=True
     )
