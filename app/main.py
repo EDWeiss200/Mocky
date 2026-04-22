@@ -43,6 +43,7 @@ async def main():
 async def set_commands(bot: Bot):
     commands = [
         BotCommand(command="start", description="🏠 На главную"),
+        BotCommand(command="pay", description="💰 Пополнить баланс"),
         BotCommand(command="resumes", description="📂 Мои резюме"),
         BotCommand(command="active", description="⚡️ Активные сессии"),
         BotCommand(command="completed", description="📋 Мои интервью"),
