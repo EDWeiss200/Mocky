@@ -29,13 +29,15 @@ async def main():
     
     dp.include_router(router)
 
-    print (f"Bot is running. Backend url: {config.BACKEND_URL}")
+    await bot.delete_webhook(drop_pending_updates=True)
+
+    logging.info(f"Bot is running. Backend url: {config.BACKEND_URL}")
     try:
         await dp.start_polling(bot, api=api)
     except Exception as e:
         logging.error(f"Ошибка: {e}")
     finally:
-        print("session closing...")
+        logging.info("session closing...")
         await api.close()
         await bot.session.close()
 
@@ -56,4 +58,4 @@ if __name__ == "__main__":
     try:
         asyncio.run(main())
     except KeyboardInterrupt:
-        print("Bot stopped by user")
+        logging.info("Bot stopped by user")
