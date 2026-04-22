@@ -75,6 +75,18 @@ services:
       - celery_worker
     networks:
       - dev
+
+  tg-bot:
+    build: ./app
+    command: python main.py
+    volumes:
+      - ./app:/app
+    depends_on:
+      - backend
+    env_file:
+      - ./app/.env
+    networks:
+      - dev 
       
 volumes:
   postgres_data:
