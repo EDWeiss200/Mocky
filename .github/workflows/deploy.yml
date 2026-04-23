@@ -16,6 +16,6 @@ jobs:
           username: ${{ secrets.SERVER_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
-            cd /opt/mocky
+            cd ~/opt/mocky
             git pull origin main
             docker-compose up -d --build
