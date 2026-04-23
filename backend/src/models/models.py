@@ -60,7 +60,7 @@ class User(SQLAlchemyBaseUserTableUUID, Base):
             id=self.id,
             username=self.username,
             email=self.email,
-        )
+        ) 
 
 
 

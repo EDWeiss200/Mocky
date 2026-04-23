@@ -54,7 +54,6 @@ app.add_middleware(
 
 
 
-
 @app.get("/")
 async def home():
     return "Hello World"
