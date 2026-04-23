@@ -15,7 +15,12 @@ from httpx_oauth.clients.github import GitHubOAuth2
 
 
 
-cookie_transport = CookieTransport(cookie_name="mocky-cookie",cookie_max_age=28800,cookie_secure=True,cookie_samesite='None')
+cookie_transport = CookieTransport(
+    cookie_name="mocky-cookie",
+    cookie_max_age=28800,
+    cookie_secure=False,
+    cookie_samesite='lax'
+)
 
 
 
