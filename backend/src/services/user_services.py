@@ -157,7 +157,7 @@ class UserServices:
         user_token = user.balance
         user_tariff = user.subscription_tier
 
-        subscription_expiries_at = user.subscription_expires_at
+        subscription_expiries_at = user.subscription_expiries_at
 
         return {
             "user_token": user_token,
@@ -186,7 +186,7 @@ class UserServices:
         elif tariff == "sprint":
             data_to_update = {
                 "subscription_tier": "sprint",
-                "subscription_expires_at": now + timedelta(days=3),
+                "subscription_expiries_at": now + timedelta(days=3),
                 "sprint_voice_used": 0
             }
 
@@ -196,7 +196,7 @@ class UserServices:
 
             data_to_update = {
                 "subscription_tier": "pro",
-                "subscription_expires_at": now + timedelta(days=30),
+                "subscription_expiries_at": now + timedelta(days=30),
             }
 
         # сохраняем обновленного юзера в базу
