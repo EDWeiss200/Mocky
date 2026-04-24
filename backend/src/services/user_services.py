@@ -200,7 +200,7 @@ class UserServices:
             }
 
         # сохраняем обновленного юзера в базу
-        await self.user_repo.update(user, data_to_update)
+        await self.user_repo.update(user.id, data_to_update)
 
 
 
