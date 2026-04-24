@@ -95,6 +95,8 @@ services:
   tg-bot:
     image: ghcr.io/edweiss200/mocky-tg-bot:latest
     command: python main.py
+    environment:
+      - BACKEND_URL=http://backend:8000
     volumes:
       - ./app:/app
     depends_on:
