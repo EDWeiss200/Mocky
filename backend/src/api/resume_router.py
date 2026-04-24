@@ -1,11 +1,10 @@
 from services.resume_services import ResumeServices
 from services.interview_services import InterviewServices
-from models.models import User,Resume
-from schemas.schemas import UserReadSchema, ResumeAnalysisResponse,ResumeStatisticsResponse
+from models.models import User
+from schemas.schemas import ResumeAnalysisResponse,ResumeStatisticsResponse
 from api.dependencies import resume_service,interview_service
 from auth.auth import current_user
 from fastapi import APIRouter, Depends, UploadFile, File, HTTPException
-from fastapi_cache.decorator import cache
 from uuid import UUID
 from utils.verify_balance import VerifyBalance
 from api.dependencies import user_service

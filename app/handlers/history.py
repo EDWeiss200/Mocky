@@ -240,7 +240,7 @@ async def handle_show_history(callback: types.CallbackQuery, api):
         content = msg.get('content') or msg.get('text') or "..."
         
         text += f"{icon} **{author}**\n{content}\n"
-        text += f"⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯\n" 
+        text += "⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯\n" 
 
     if len(text) > 4000:
         text = text[:4000] + "\n\n⚠️ *Часть истории скрыта из-за лимитов Telegram...*"

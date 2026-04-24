@@ -1,11 +1,9 @@
 from typing import AsyncGenerator
-from sqlalchemy import Boolean, ForeignKey, Integer, String, func, select,Column
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy.orm import Mapped, declared_attr, mapped_column
 from fastapi import Depends
-from fastapi_users.db import SQLAlchemyBaseUserTable, SQLAlchemyUserDatabase
-from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
-from sqlalchemy.orm import DeclarativeBase,relationship
+from fastapi_users.db import SQLAlchemyUserDatabase
+from sqlalchemy.ext.asyncio import async_sessionmaker, create_async_engine
+from sqlalchemy.orm import DeclarativeBase
 from config import DATABASE_URL_CONFIG
 from models.models import User as User_Base,OAuthAccount
 import random

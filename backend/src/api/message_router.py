@@ -1,14 +1,10 @@
 from services.interview_services import InterviewServices
-from services.resume_services import ResumeServices
 from services.message_services import MessageServices
-from models.models import User,Resume,MessageRole
-from schemas.schemas import UserReadSchema, StartInterviewRequest, AnswerRequest, SessionStatus
+from models.models import User
 from api.dependencies import interview_service
-from api.dependencies import resume_service
 from api.dependencies import message_service
 from auth.auth import current_user
-from fastapi import APIRouter, Depends, UploadFile, File, HTTPException
-from fastapi_cache.decorator import cache
+from fastapi import APIRouter, Depends, HTTPException
 from uuid import UUID
 
 

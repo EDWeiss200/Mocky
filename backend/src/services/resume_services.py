@@ -1,6 +1,5 @@
 from utils.repository import AbstractRepository
-from fastapi import APIRouter, Depends, UploadFile, File, HTTPException
-from sqlalchemy.ext.asyncio import AsyncSession
+from fastapi import File, HTTPException
 import PyPDF2 
 import io
 from config import client

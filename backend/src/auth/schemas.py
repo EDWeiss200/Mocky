@@ -2,10 +2,6 @@ import uuid
 from pydantic import EmailStr
 from typing import Optional
 from fastapi_users import schemas
-from datetime import datetime
-from pydantic import BaseModel, ConfigDict, EmailStr
-from datetime import datetime
-from typing import List, Optional
 from uuid import UUID
 
 

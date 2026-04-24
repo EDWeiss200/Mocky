@@ -1,7 +1,6 @@
 from abc import ABC,abstractmethod
 from database.database import async_session_maker
-from sqlalchemy import insert,select,delete,update,func,column,join,desc,distinct
-from sqlalchemy.orm import selectinload,load_only
+from sqlalchemy import insert,select,delete,update
 
 
 class AbstractRepository(ABC):
@@ -129,15 +128,7 @@ class SQLAlchemyRepository(AbstractRepository):
             res = res.unique().scalar_one_or_none()
             return res
         
-    async def delete_one(self,id):
-        async with async_session_maker() as session:
-            stmt = (
-                delete(self.model).
-                where(self.model.id == id)
-            )
-            await session.execute(stmt)
-            await session.commit()
-            return id
+
 
     
         

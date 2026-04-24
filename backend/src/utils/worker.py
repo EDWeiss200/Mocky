@@ -4,7 +4,7 @@ from email.message import EmailMessage
 from config import REDIS_URL_FORGOTPASS,SMTP_USER,SMTP_PASS,SMTP_HOST,SMTP_PORT
 from database.database import async_session_maker
 from datetime import datetime,timezone
-from sqlalchemy import update,select
+from sqlalchemy import update
 from models.models import User
 import asyncio
 from celery.schedules import crontab

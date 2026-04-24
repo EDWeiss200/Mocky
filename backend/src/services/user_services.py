@@ -7,7 +7,6 @@ from fastapi import HTTPException,status
 from datetime import datetime, timezone,timedelta
 from models.enum import Feature,FEATURE_COSTS
 from models.models import User
-import uuid
 
 class UserServices:
 

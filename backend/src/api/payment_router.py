@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, Request, HTTPException
+from fastapi import APIRouter, Depends, Request
 from yookassa import Configuration, Payment
 import uuid
 from auth.auth import current_user

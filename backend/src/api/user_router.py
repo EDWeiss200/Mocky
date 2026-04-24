@@ -1,14 +1,11 @@
 from fastapi import APIRouter,Depends,Request,Response
 from services.user_services import UserServices
 from models.models import User
-from schemas.schemas import UserReadSchema,ResetPasswordRequest
+from schemas.schemas import ResetPasswordRequest
 from api.dependencies import user_service
 from auth.auth import current_user
-from fastapi_cache.decorator import cache
 from pydantic import EmailStr
-from auth.auth import get_user_manager
 from fastapi import HTTPException
-from database.redis import redis_client_forgotpass
 
 
 

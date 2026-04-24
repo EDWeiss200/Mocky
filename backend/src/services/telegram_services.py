@@ -1,6 +1,3 @@
-from schemas.schemas import StartInterviewRequest,InterviewCreate,MessageCreate
-from fastapi import HTTPException
-from config import BOT_SECRET_TOKEN
 
 
 

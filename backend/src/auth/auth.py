@@ -7,7 +7,7 @@ from config import SECRET_AUTH, GITHUB_CLIENT_ID, GITHUB_CLIENT_SECRET
 
 import fastapi_users
 from fastapi_users.password import PasswordHelper
-from pwdlib import PasswordHash, exceptions
+from pwdlib import PasswordHash
 from pwdlib.hashers.argon2 import Argon2Hasher
 import uuid
 

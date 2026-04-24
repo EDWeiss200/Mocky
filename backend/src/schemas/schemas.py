@@ -1,13 +1,8 @@
-import uuid
 from pydantic import EmailStr
 from typing import Optional
-from fastapi_users import schemas
 from datetime import datetime
-from pydantic import BaseModel, ConfigDict, EmailStr,HttpUrl
-from datetime import datetime
-from typing import List, Optional
-from enum import Enum
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel, ConfigDict, HttpUrl
+from typing import List
 from pydantic.alias_generators import to_camel
 from models.enum import SessionStatus,MessageRole, InterviewRole
 

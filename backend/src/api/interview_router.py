@@ -3,8 +3,8 @@ from services.resume_services import ResumeServices
 from services.message_services import MessageServices
 from services.HeadHunter_services import HeadHunterService
 from services.user_services import UserServices
-from models.models import User,Resume,MessageRole
-from schemas.schemas import UserReadSchema, StartInterviewRequest, AnswerRequest, SessionStatus, StartHHInterviewRequest, GapAnalysisResponse
+from models.models import User,MessageRole
+from schemas.schemas import StartInterviewRequest, AnswerRequest, SessionStatus, StartHHInterviewRequest, GapAnalysisResponse
 from api.dependencies import interview_service
 from api.dependencies import resume_service
 from api.dependencies import message_service
@@ -12,10 +12,7 @@ from api.dependencies import headhunter_service
 from api.dependencies import user_service
 from auth.auth import current_user
 from fastapi import APIRouter, Depends, UploadFile, File, HTTPException
-from api.user_router import user_key_builder
-from fastapi_cache.decorator import cache
 from uuid import UUID
-from pydantic import HttpUrl
 from utils.verify_balance import VerifyBalance
 from models.enum import Feature
 

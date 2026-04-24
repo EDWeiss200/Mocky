@@ -1,11 +1,10 @@
 from typing import Annotated, List, Optional
 from datetime import datetime, timezone, timedelta
-from zoneinfo import ZoneInfo  # <--- Ключевое исправление здесь!
 from models.enum import SessionStatus,MessageRole
 
 
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
-from sqlalchemy import Boolean, ForeignKey, Integer, String, Text, MetaData
+from sqlalchemy import Boolean, ForeignKey, Integer, String, Text
 from fastapi_users.db import SQLAlchemyBaseUserTableUUID,SQLAlchemyBaseOAuthAccountTableUUID
 from schemas.schemas import UserReadSchema
 from sqlalchemy.dialects.postgresql import JSONB

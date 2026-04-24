@@ -1,6 +1,6 @@
 from utils.repository import AbstractRepository
-from schemas.schemas import StartInterviewRequest,InterviewCreate,MessageCreate
-from models.models import Resume,SessionStatus,Message,MessageRole, Interview
+from schemas.schemas import InterviewCreate
+from models.models import Resume,SessionStatus,MessageRole, Interview
 from models.enum import SessionStatus
 from fastapi import HTTPException
 from config import client

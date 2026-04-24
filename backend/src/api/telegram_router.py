@@ -3,7 +3,6 @@ from services.user_services import UserServices
 from api.dependencies import user_service
 from models.models import User
 from schemas.schemas import TelegramLoginSchema,TelegramLinkRequest
-from api.dependencies import user_service
 from auth.auth import current_user,auth_backend
 from auth.schemas import UserCreate
 from auth.manager import UserManager, get_user_manager
