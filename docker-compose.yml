@@ -2,13 +2,29 @@ networks:
   dev:
 
 services:
+
+  caddy:
+    image: caddy:2-alpine
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile
+      - caddy_data:/data
+      - caddy_config:/config
+    depends_on:
+      - backend
+    networks:
+      - dev
+
   backend:
     image: ghcr.io/edweiss200/mocky-backend:latest
     command: bash -c 'while !</dev/tcp/db/5432; do sleep 1; done; cd src && alembic upgrade head && uvicorn main:app --host 0.0.0.0 --port 8000'
     volumes:
       - ./backend:/app
-    ports:
-      - "8008:8000"
+    expose:
+      - "8000"
     environment:
       - DATABASE_URL=postgresql+asyncpg://postgres:12345@db:5432/mockybd
     depends_on:
@@ -90,3 +106,5 @@ services:
       
 volumes:
   postgres_data:
+  caddy_data:
+  caddy_config:
