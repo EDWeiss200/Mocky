@@ -5,7 +5,8 @@ from auth.auth import current_user
 from models.models import User
 from api.dependencies import user_service
 from services.user_services import UserServices
-from config import YOOKASSA_SHOP_ID, YOOKASSA_SECRET_KEY, TEST_YOOKASSA_SECRET_KEY,TEST_YOOKASSA_SHOP_ID
+#from config import YOOKASSA_SHOP_ID, YOOKASSA_SECRET_KEY, 
+from config import TEST_YOOKASSA_SECRET_KEY,TEST_YOOKASSA_SHOP_ID
 from models.enum import PaymentTariffEnum
 
 
