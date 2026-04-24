@@ -175,7 +175,7 @@ class UserServices:
         
         data_to_update = {}
 
-        now = datetime.now(timezone.utc)
+        now = datetime.now(timezone.utc).replace(tzinfo=None)
 
         if tariff.startswith("tokens"):
             data_to_update = {
