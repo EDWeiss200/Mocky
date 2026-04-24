@@ -157,7 +157,7 @@ class UserServices:
         user_token = user.balance
         user_tariff = user.subscription_tier
 
-        subscription_expiries_at = user.subscription_expiries_at
+        subscription_expiries_at = user.subscription_expires_at
 
         return {
             "user_token": user_token,
