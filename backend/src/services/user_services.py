@@ -117,7 +117,7 @@ class UserServices:
             "hashed_password": hashed_password
         }
 
-        user = await self.user_repo.update(user_id,data_to_update)
+        await self.user_repo.update(user_id,data_to_update)
 
         await redis_client_forgotpass.delete(f"reset_code:{email}")
 

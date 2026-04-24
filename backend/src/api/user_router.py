@@ -62,6 +62,8 @@ async def forgot_password(
         return {"message": "Если такой email зарегестрирован, мы отправимли код"}
     
     res = await user_service.send_code_forgotpass(email)
+    return res
+
 
 
 @router.post("/reset-password")

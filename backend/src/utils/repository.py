@@ -25,10 +25,7 @@ class AbstractRepository(ABC):
     @abstractmethod
     async def find_filter():
         raise NotImplementedError
-    
-    @abstractmethod
-    async def delete_one():
-        raise NotImplementedError
+
 
 
 

@@ -242,7 +242,7 @@ async def finish_interview(
 
 @router.get("/")
 #@cache(expire=60, key_builder=user_key_builder)
-async def get_interviews_user(
+async def get_interviews_all(
     user: User = Depends(current_user),
     interview_service: InterviewServices = Depends(interview_service)
 ):
@@ -254,7 +254,7 @@ async def get_interviews_user(
 
 @router.get("/completed")
 #@cache(expire=60, key_builder=user_key_builder)
-async def get_interviews_user(
+async def get_completed_interview(
     user: User = Depends(current_user),
     interview_service: InterviewServices = Depends(interview_service)
 ):
@@ -266,7 +266,7 @@ async def get_interviews_user(
 
 @router.get("/active")
 #@cache(expire=60, key_builder=user_key_builder)
-async def get_interviews_user(
+async def get_active_interview(
     user: User = Depends(current_user),
     interview_service: InterviewServices = Depends(interview_service)
 ):
@@ -278,7 +278,7 @@ async def get_interviews_user(
 
 
 @router.post('/TEST/start')
-async def start_interview(
+async def test_start_interview(
     req: StartInterviewRequest,
     user: User = Depends(current_user),
     interview_service: InterviewServices = Depends(interview_service),
@@ -298,7 +298,7 @@ async def start_interview(
     
 
 @router.post('/TEST/answer/{interview_id}')
-async def answer_question(
+async def test_answer_question(
     interview_id: UUID,
     req: AnswerRequest,
     user: User = Depends(current_user),
@@ -342,7 +342,7 @@ async def answer_question(
     
 
 @router.post("/TEST/finish/{interview_id}")
-async def finish_interview(
+async def test_finish_interview(
     interview_id:UUID,
     user: User = Depends(current_user),
     interview_service: InterviewServices = Depends(interview_service),

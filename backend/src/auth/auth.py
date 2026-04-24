@@ -4,8 +4,6 @@ from .manager import get_user_manager
 from .database import User_Now as User
 from fastapi_users.authentication import JWTStrategy
 from config import SECRET_AUTH, GITHUB_CLIENT_ID, GITHUB_CLIENT_SECRET
-
-import fastapi_users
 from fastapi_users.password import PasswordHelper
 from pwdlib import PasswordHash
 from pwdlib.hashers.argon2 import Argon2Hasher
