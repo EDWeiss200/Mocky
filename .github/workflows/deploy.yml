@@ -53,4 +53,5 @@ jobs:
           script: |
             cd ~/opt/mocky
             git pull origin main
-            docker compose up -d --build
+            docker compose pull
+            docker compose up -d
