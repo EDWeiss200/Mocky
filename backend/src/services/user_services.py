@@ -172,26 +172,35 @@ class UserServices:
         user = await self.get_user_by_id(user_id)
         if not user:
             return
+        
+        data_to_update = {}
 
         now = datetime.now(timezone.utc)
 
         if tariff.startswith("tokens"):
-
-            user.balance += amount
+            data_to_update = {
+                "balance": user.balance + amount
+            }
+            
             
         elif tariff == "sprint":
-            # активируем спринт на 3 дня и сбрасываем счетчик голоса
-            user.subscription_tier = "sprint"
-            user.subscription_expires_at = now + timedelta(days=3)
-            user.sprint_voice_used = 0 
+            data_to_update = {
+                "subscription_tier": "sprint",
+                "subscription_expires_at": now + timedelta(days=3),
+                "sprint_voice_used": 0
+            }
+
+
             
         elif tariff == "pro":
-            # активируем PRO на 30 дней
-            user.subscription_tier = "pro"
-            user.subscription_expires_at = now + timedelta(days=30)
+
+            data_to_update = {
+                "subscription_tier": "pro",
+                "subscription_expires_at": now + timedelta(days=30),
+            }
 
         # сохраняем обновленного юзера в базу
-        await self.user_repo.update(user)
+        await self.user_repo.update(user, data_to_update)
 
 
 
