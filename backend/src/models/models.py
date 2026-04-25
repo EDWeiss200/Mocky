@@ -61,6 +61,8 @@ class User(SQLAlchemyBaseUserTableUUID, Base):
             email=self.email,
         ) 
 
+    def __str__(self):
+        return f"Почта: {self.email} tg_id:{self.telegram_id}"
 
 
 class Resume(Base):
@@ -74,6 +76,9 @@ class Resume(Base):
     )   
     user: Mapped["User"] = relationship(back_populates="resumes")
     interviews: Mapped[List["Interview"]] = relationship(back_populates="resume")
+
+    def __str__(self):
+        return f"Резюме {self.name}   {self.id}"
 
 class Interview(Base):
     __tablename__ = "interviews"
@@ -95,6 +100,8 @@ class Interview(Base):
     resume: Mapped["Resume"] = relationship(back_populates="interviews")
     messages: Mapped[List["Message"]] = relationship(back_populates="interview", cascade="all, delete-orphan")
 
+    def __str__(self):
+        return f"Интервью {self.id}"
 
 
 class Message(Base):
