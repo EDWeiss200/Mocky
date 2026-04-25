@@ -26,6 +26,8 @@ services:
       - "8000"
     environment:
       - DATABASE_URL=postgresql+asyncpg://postgres:12345@db:5432/mockybd
+    env_file:
+      - ./backend/src/.env
     depends_on:
       - db
       - redis
