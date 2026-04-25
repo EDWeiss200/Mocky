@@ -20,6 +20,13 @@ from redis import asyncio as aioredis
 
 from config import REDIS_URL_CACHE,SECRET_AUTH
 
+from models.admin_models import UserAdmin, InterviewAdmin, ResumeAdmin
+from sqladmin import Admin
+from database.database import engine
+
+from utils.AdminAuth import AdminAuth
+
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
 
@@ -32,6 +39,9 @@ app = FastAPI(
     lifespan=lifespan
 )
 
+
+authentication_backend = AdminAuth(secret_key=SECRET_AUTH)
+admin = Admin(app, engine, authentication_backend=authentication_backend, base_url="/admin")
 
 
 origins = [
@@ -51,12 +61,12 @@ app.add_middleware(
 )
 
 
-
+    
 
 
 @app.get("/")
 async def home():
-    return "Hello World"
+    return "Hi"
 
 
 
@@ -76,9 +86,9 @@ app.include_router(
     fastapi_users.get_oauth_router(
         github_oauth_client,
         auth_backend,
-        SECRET_AUTH, # Твой секрет для JWT из конфига
-        associate_by_email=True, # МАГИЯ: если email в GitHub совпадет с email в нашей БД, аккаунты склеятся автоматически!
-        is_verified_by_default=True # GitHub уже проверил почту за нас, доверяем ему
+        SECRET_AUTH,
+        associate_by_email=True, 
+        is_verified_by_default=True 
     ),
     prefix="/auth/github",
     tags=["auth"],

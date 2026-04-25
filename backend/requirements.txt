@@ -17,3 +17,4 @@ jinja2
 httpx
 celery
 yookassa
+sqladmin
