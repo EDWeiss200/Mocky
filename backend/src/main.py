@@ -43,6 +43,9 @@ app = FastAPI(
 authentication_backend = AdminAuth(secret_key=SECRET_AUTH)
 admin = Admin(app, engine, authentication_backend=authentication_backend, base_url="/admin")
 
+admin.add_view(UserAdmin)
+admin.add_view(InterviewAdmin)
+admin.add_view(ResumeAdmin)
 
 origins = [
     "http://127.0.0.1:5173",

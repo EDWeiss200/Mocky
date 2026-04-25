@@ -1,5 +1,5 @@
 from sqladmin import ModelView
-from models.models import User, Interview, Resume, Message
+from models.models import User, Interview, Resume
 
 class UserAdmin(ModelView, model=User):
     column_list = "__all__"
