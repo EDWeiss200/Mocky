@@ -2,8 +2,8 @@ from sqladmin import ModelView
 from models.models import User, Interview, Resume
 
 class UserAdmin(ModelView, model=User):
-    column_list = "__all__"
-    column_searchable_list = [User.id, User.email, User.telegram_id, User.balance, User.subscription_tier]
+    column_list = [User.id, User.email, User.telegram_id, User.balance, User.subscription_tier]
+    column_searchable_list = [User.email]
     icon = "fa-solid fa-user"
     name = "Пользователь"
     name_plural = "Пользователи"
