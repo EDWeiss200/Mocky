@@ -18,3 +18,4 @@ httpx
 celery
 yookassa
 sqladmin
+itsdangerous
