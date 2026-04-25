@@ -21,6 +21,7 @@ services:
   backend:
     image: ghcr.io/edweiss200/mocky-backend:latest
     command: bash -c 'while !</dev/tcp/db/5432; do sleep 1; done; cd src && alembic upgrade head && uvicorn main:app --host 0.0.0.0 --port 8000 --proxy-headers --forwarded-allow-ips="*"'
+    volumes: # <-- вернули ключ на место
       - ./backend:/app
     expose:
       - "8000"
@@ -63,6 +64,8 @@ services:
     command: celery -A utils.worker.celery worker --loglevel=info
     volumes:
       - ./backend:/app
+    env_file:
+      - ./backend/src/.env
     depends_on:
       - redis
       - db
@@ -75,6 +78,8 @@ services:
     command: celery -A utils.worker.celery beat --loglevel=info
     volumes:
       - ./backend:/app
+    env_file: 
+      - ./backend/src/.env
     depends_on:
       - redis
       - db
