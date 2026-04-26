@@ -1,3 +1,4 @@
+import logging
 from aiogram import Router, types, F
 from aiogram.filters import Command, CommandObject
 from aiogram.fsm.context import FSMContext
@@ -16,31 +17,30 @@ async def cmd_start(message: types.Message, command: CommandObject, api, state: 
     if command.args:
         await api.confirm_link(telegram_id, command.args)
 
-    is_logged_in = await api.login(telegram_id, username)
+    try:
+        is_logged_in = await api.login(telegram_id, username)
+    except Exception as e:
+        logging.error(f"Ошибка API при логине юзера {telegram_id}: {e}")
+        is_logged_in = False
+
     if is_logged_in:
         await list_resumes_with_buttons(message, api, first_name)
     else:
-        await message.answer("Ошибка авторизации. Попробуйте позже.")
+        await message.answer(
+            "<b>Упс! Ошибка авторизации.</b> 🤖\nСервер временно недоступен. Пожалуйста, попробуйте чуть позже.", 
+            parse_mode="HTML"
+        )
 
-@router.message(F.text == "⏸ Поставить на паузу")
-@router.message(Command("pause"))
-async def cmd_pause(message: types.Message, state: FSMContext):
-    current_state = await state.get_state()
+@router.message(InterviewProcess.interviewing, F.text == "⏸ Поставить на паузу")
+async def pause_active_interview(message: types.Message, state: FSMContext):
+    await state.set_state(None) 
     
-    if current_state == InterviewProcess.interviewing:
-        await state.set_state(None) 
-        await message.answer(
-            "⏸ **Интервью приостановлено.**\n"
-            "Вы вернулись в главное меню. Чтобы продолжить, выберите эту сессию в разделе '📊 Активные сессии'.",
-            parse_mode="Markdown",
-            reply_markup=get_main_menu(is_interviewing=False)
-        )
-    else:
-        await state.set_state(None)
-        await message.answer(
-            "У вас сейчас нет активного интервью, но я на всякий случай сбросил текущие действия. 🫡",
-            reply_markup=get_main_menu(is_interviewing=False)
-        )
+    await message.answer(
+        "⏸ <b>Интервью приостановлено.</b>\n\n"
+        "Вы вернулись в главное меню. Чтобы продолжить, выберите эту сессию в разделе «📊 Активные сессии».",
+        parse_mode="HTML",
+        reply_markup=get_main_menu(is_interviewing=False)
+    )
 
 @router.message(Command("pay"))
 async def cmd_pay(message: types.Message):
@@ -48,13 +48,13 @@ async def cmd_pay(message: types.Message):
 
 async def show_main_pay_screen(message_or_callback):
     text = (
-        "💎 **Mocky — готовься к интервью эффективно!**\n\n"
+        "💎 <b>Mocky — готовься к интервью эффективно!</b>\n\n"
         "Открой полный доступ к возможностями нашего сервиса и увеличь свои шансы на оффер:\n\n"
-        "✅ **Безлимитные интервью** — тренируйся сколько угодно\n"
-        "✅ **AI-анализ ответов** — подробный разбор каждой ошибки\n"
-        "✅ **Все роли интервьюеров** — от HR до CTO\n"
-        "✅ **Приоритетная поддержка** — отвечаем сразу\n\n"
-        "💳 **Выберите действие:**"
+        "✅ <b>Безлимитные интервью</b> — тренируйся сколько угодно\n"
+        "✅ <b>AI-анализ ответов</b> — подробный разбор каждой ошибки\n"
+        "✅ <b>Все роли интервьюеров</b> — от HR до CTO\n"
+        "✅ <b>Приоритетная поддержка</b> — отвечаем сразу\n\n"
+        "💳 <b>Выберите действие:</b>"
     )
 
     kb = types.InlineKeyboardMarkup(
@@ -70,9 +70,9 @@ async def show_main_pay_screen(message_or_callback):
     )
 
     if isinstance(message_or_callback, types.Message):
-        await message_or_callback.answer(text, parse_mode="Markdown", reply_markup=kb)
+        await message_or_callback.answer(text, parse_mode="HTML", reply_markup=kb)
     else:
-        await message_or_callback.message.edit_text(text, parse_mode="Markdown", reply_markup=kb)
+        await message_or_callback.message.edit_text(text, parse_mode="HTML", reply_markup=kb)
 
 @router.callback_query(F.data == "buy_premium")
 async def process_buy_premium(callback: types.CallbackQuery):
@@ -87,10 +87,10 @@ async def process_buy_premium(callback: types.CallbackQuery):
         ]
     )
     await callback.message.edit_text(
-        "✨ **Выберите тариф или пакет токенов:**\n\n"
+        "✨ <b>Выберите тариф или пакет токенов:</b>\n\n"
         "Подписки дают безлимит на время, а токены позволяют оплачивать каждое интервью отдельно.",
         reply_markup=kb,
-        parse_mode="Markdown"
+        parse_mode="HTML"
     )
 
 @router.callback_query(F.data.startswith("buy_item_"))
@@ -108,11 +108,11 @@ async def show_product_card(callback: types.CallbackQuery):
     name, price, desc = products.get(item_id, ("Товар", "0", ""))
     
     text = (
-        f"🌟 **{name}**\n\n"
+        f"🌟 <b>{name}</b>\n\n"
         f"{desc}\n\n"
-        f"💰 **К оплате: {price} ₽**\n"
+        f"💰 <b>К оплате: {price} ₽</b>\n"
         "────────────────────\n"
-        "🚀 *После оплаты доступ откроется мгновенно!*"
+        "🚀 <i>После оплаты доступ откроется мгновенно!</i>"
     )
     
     kb = types.InlineKeyboardMarkup(
@@ -122,7 +122,7 @@ async def show_product_card(callback: types.CallbackQuery):
         ]
     )
     
-    await callback.message.edit_text(text, reply_markup=kb, parse_mode="Markdown")
+    await callback.message.edit_text(text, reply_markup=kb, parse_mode="HTML")
 
 @router.callback_query(F.data.startswith("final_pay_"))
 async def process_final_payment(callback: types.CallbackQuery):
@@ -131,11 +131,12 @@ async def process_final_payment(callback: types.CallbackQuery):
 @router.callback_query(F.data == "about_service")
 async def process_about_service(callback: types.CallbackQuery):
     await callback.message.edit_text(
-        "🚀 Mocky — это ваш персональный AI-тренажер для прохождения технических и HR-интервью.\n\n"
+        "🚀 <b>Mocky</b> — это ваш персональный AI-тренажер для прохождения технических и HR-интервью.\n\n"
         "Мы помогаем разработчикам преодолеть страх перед собеседованиями и подготовить качественные ответы на сложные вопросы.",
         reply_markup=types.InlineKeyboardMarkup(
             inline_keyboard=[[types.InlineKeyboardButton(text="🔙 Назад", callback_data="back_to_pay")]]
-        )
+        ),
+        parse_mode="HTML"
     )
 
 @router.callback_query(F.data == "back_to_pay")

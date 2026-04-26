@@ -12,7 +12,8 @@ router = Router()
 @router.callback_query(F.data.startswith("set_active_res:"))
 async def handle_set_active_resume(callback: types.CallbackQuery, state: FSMContext):
     resume_id = callback.data.split(":")[1]
-    await state.update_data(resume_id=resume_id)
+    
+    await state.update_data(resume_id=resume_id, questions_count=None, role=None)
     await state.set_state(InterviewProcess.choosing_questions_count)
     
     builder = InlineKeyboardBuilder()
@@ -22,10 +23,10 @@ async def handle_set_active_resume(callback: types.CallbackQuery, state: FSMCont
 
     await callback.answer()
     await callback.message.edit_text(
-        "✅ **Резюме выбрано!**\n\n" 
+        "✅ <b>Резюме выбрано!</b>\n\n" 
         "Сколько вопросов задать тебе на интервью?",
         reply_markup=builder.as_markup(),
-        parse_mode="Markdown"
+        parse_mode="HTML"
     )
 
 @router.callback_query(F.data.startswith("set_q_count:"))
@@ -97,35 +98,60 @@ async def process_questions_count(message: types.Message, state: FSMContext):
 
 @router.message(F.text == "🚀 Начать интервью")
 async def cmd_prepare_interview(message: types.Message, state: FSMContext, api):
-    current_state = await state.get_state()
-    
-    if current_state == InterviewProcess.choosing_questions_count.state:
-        return await message.answer("⚠️ Сначала укажите количество вопросов, выбрав из списка или введя число.")
-    if current_state == InterviewProcess.choosing_role.state:
-        return await message.answer("⚠️ Сначала выберите роль для интервью с помощью кнопок выше.")
-
     user_data = await state.get_data()
     resume_id = user_data.get("resume_id")
-    q_count = user_data.get("questions_count", 5)
-    role = user_data.get("role", "pragmatic_lead")
+    
+    q_count = user_data.get("questions_count")
+    role = user_data.get("role")
 
     if not resume_id:
         return await message.answer(
-            "⚠️ **Резюме не выбрано.**\n"
-            "Сначала выберите резюме в разделе '📂 Мои резюме' или пришлите новый PDF файл.",
-            parse_mode="Markdown"
+            "⚠️ <b>Резюме не выбрано.</b>\n"
+            "Сначала выберите резюме в разделе «📂 Мои резюме» или пришлите новый PDF файл.",
+            parse_mode="HTML"
+        )
+
+    if not q_count:
+        await state.set_state(InterviewProcess.choosing_questions_count)
+        builder = InlineKeyboardBuilder()
+        for count in ["5", "10", "15", "20"]:
+            builder.button(text=f"{count} вопросов", callback_data=f"set_q_count:{count}")
+        builder.adjust(1)
+        
+        return await message.answer(
+            "⚙️ Вы выбрали резюме, но не настроили параметры.\n\n"
+            "<b>Сколько вопросов задать тебе на интервью?</b>",
+            reply_markup=builder.as_markup(),
+            parse_mode="HTML"
+        )
+
+    if not role:
+        await state.set_state(InterviewProcess.choosing_role)
+        builder = InlineKeyboardBuilder()
+        for role_key, role_name in INTERVIEW_ROLES.items():
+            builder.button(text=role_name, callback_data=f"set_role:{role_key}")
+        builder.adjust(1)
+        
+        return await message.answer(
+            f"⚙️ Вопросов: <b>{q_count}</b>.\n\n"
+            "<b>Теперь выберите роль интервьюера:</b>",
+            reply_markup=builder.as_markup(),
+            parse_mode="HTML"
         )
 
     async with ChatActionSender.typing(bot=message.bot, chat_id=message.chat.id):
-        interview_data = await api.start_interview(message.from_user.id, resume_id, q_count, role)
+        try:
+            interview_data = await api.start_interview(message.from_user.id, resume_id, q_count, role)
+        except Exception as e:
+            return await message.answer("❌ <b>Ошибка связи с сервером.</b> Попробуйте позже.", parse_mode="HTML")
     
     if interview_data:
         if isinstance(interview_data, dict) and interview_data.get("error") == "payment_required":
             return await message.answer(
-                "⚠️ **Недостаточно токенов!**\n\n"
-                "На вашем аккаунте закончились токены для проведения интервью. "
-                "Пожалуйста, пополните баланс в личном кабинете на сайте.",
-                parse_mode="Markdown"
+                "⚠️ <b>Недостаточно попыток!</b>\n\n"
+                "На вашем аккаунте закончились бесплатные интервью. "
+                "Пожалуйста, пополните баланс.",
+                parse_mode="HTML"
             )
         
         if interview_data.get("id"):
@@ -136,20 +162,46 @@ async def cmd_prepare_interview(message: types.Message, state: FSMContext, api):
             )
             
             await message.answer(
-                f"🚀 **Интервью началось!**\n\n"
-                f"**Вопрос 1 из {q_count}:**\n\n{interview_data.get('text')}",
-                parse_mode="Markdown",
+                f"🚀 <b>Интервью началось!</b>\n\n"
+                f"<b>Вопрос 1 из {q_count}:</b>\n\n{interview_data.get('text')}",
+                parse_mode="HTML",
                 reply_markup=get_main_menu(is_interviewing=True)
             )
             return
             
-    await message.answer("❌ Ошибка при создании сессии. Проверьте соединение с сервером.")
-
+    await message.answer("❌ Ошибка при создании сессии. Проверьте соединение с сервером.", parse_mode="HTML")
 
 async def start_actual_interview(message, state, api, resume_id):
     data = await state.get_data()
-    q_count = data.get("questions_count", 5)
-    role = data.get("role", "pragmatic_lead")
+    q_count = data.get("questions_count")
+    role = data.get("role")
+    
+    if not resume_id:
+        return await message.answer(
+            "⚠️ **Резюме не выбрано.**\n\nСначала выберите резюме в разделе '📂 Мои резюме' или пришлите новый PDF файл.",
+            parse_mode="Markdown",
+        )
+    if q_count is None:
+        return await message.answer(
+            "⚠️ **Не указано количество вопросов.**\n\nСначала выберите количество вопросов.",
+            parse_mode="Markdown",
+        )
+    if role is None:
+        return await message.answer(
+            "⚠️ **Не выбрана роль интервьюера.**\n\nСначала выберите роль интервьюера.",
+            parse_mode="Markdown",
+        )
+    allowed_counts = {5, 10, 15, 20}
+    if not isinstance(q_count, int) or q_count not in allowed_counts:
+        return await message.answer(
+            "⚠️ **Некорректное количество вопросов.**\n\nВыберите количество вопросов из предложенных вариантов.",
+            parse_mode="Markdown",
+        )
+    if role not in INTERVIEW_ROLES:
+        return await message.answer(
+            "⚠️ **Некорректный тип интервьюера.**\n\nВыберите роль интервьюера из списка.",
+            parse_mode="Markdown",
+        )
     
     interview_data = await api.start_interview(message.from_user.id, resume_id, q_count, role)
     if interview_data:
@@ -234,11 +286,11 @@ async def handle_interview_answer(message: types.Message, state: FSMContext, api
 
     if question_text:
         await message.answer(
-            f"**Вопрос {display_number} из {total_questions}:**\n\n{question_text}",
-            parse_mode="Markdown"
+            f"<b>Вопрос {display_number} из {total_questions}:</b>\n\n{question_text}",
+            parse_mode="HTML"
         )
     else:
-        await message.answer("🔄 Обработка ответа, подождите...")
+        await message.answer("🔄 Обработка ответа, подождите...", parse_mode="HTML")
 
 @router.message(InterviewProcess.interviewing, F.voice)
 async def handle_voice_message(message: types.Message, state: FSMContext, api):
@@ -313,8 +365,8 @@ async def handle_voice_message(message: types.Message, state: FSMContext, api):
 
     if question_text:
         await message.answer(
-            f"**Вопрос {display_number} из {total_questions}:**\n\n{question_text}",
-            parse_mode="Markdown"
+            f"<b>Вопрос {display_number} из {total_questions}:</b>\n\n{question_text}",
+            parse_mode="HTML"
         )
     else:
-        await message.answer("🔄 Обработка ответа, подождите...")
+        await message.answer("🔄 Обработка ответа, подождите...", parse_mode="HTML")

@@ -13,7 +13,7 @@ class Backend_Client():
     async def close(self):
         await self.session.close()
 
-    async def _get_auth_headers(self, user_id: str) -> dict:
+    async def _get_auth_headers(self, user_id: int) -> dict:
         """Достаем куку из Redis (База 3) и готовим хедеры"""
         cookie = await self.redis.get(f"auth_sid:{user_id}")
         headers = {}
@@ -22,7 +22,7 @@ class Backend_Client():
         return headers
 
 
-    async def login(self, telegram_id: str, username: str):
+    async def login(self, telegram_id: int, username: str):
         url = f"{self.base_url}/telegram/login"
         
         headers = {
@@ -41,7 +41,24 @@ class Backend_Client():
             logging.error(f"Ошибка логина {response.status}: {await response.text()}")
             return False
 
-    async def confirm_link(self, telegram_id: str, token: str):
+
+    async def refresh_session(self, telegram_id: int, username: str = "User"):
+        """Продлевает жизнь куки в Redis или делает тихий логин, если она пропала."""
+        key = f"auth_sid:{telegram_id}" 
+        
+        try:
+            exists = await self.redis.exists(key)
+            
+            if exists:
+                await self.redis.expire(key, 86400)
+            else:
+                await self.login(telegram_id, username)
+                
+        except Exception as e:
+            logging.error(f"Ошибка при обновлении сессии для {telegram_id}: {e}")
+
+
+    async def confirm_link(self, telegram_id: int, token: str):
         url = f"{self.base_url}/telegram/link/confirm"
         
         headers = {
@@ -125,7 +142,7 @@ class Backend_Client():
             return None
                         
 
-    async def finish_interview(self, telegram_id: str, interview_id: str):
+    async def finish_interview(self, telegram_id: int, interview_id: str):
         url = f"{self.base_url}/interviews/finish/{interview_id}"
         headers = await self._get_auth_headers(telegram_id)
         
@@ -141,7 +158,7 @@ class Backend_Client():
             return False
         
         
-    async def get_active_interviews(self, telegram_id: str):
+    async def get_active_interviews(self, telegram_id: int):
         """Получить список активных интервью (Эндпоинт /interviews/active)"""
         url = f"{self.base_url}/interviews/active"
         headers = await self._get_auth_headers(telegram_id)
@@ -150,7 +167,7 @@ class Backend_Client():
                 return await response.json()
             return []
 
-    async def get_resumes(self, telegram_id: str):
+    async def get_resumes(self, telegram_id: int):
             """Эндпоинт GET /resumes"""
             url = f"{self.base_url}/resumes"
             headers = await self._get_auth_headers(telegram_id)
@@ -159,7 +176,7 @@ class Backend_Client():
                     return await resp.json()
                 return []
 
-    async def get_interview_history(self, telegram_id: str, interview_id: str):
+    async def get_interview_history(self, telegram_id: int, interview_id: str):
         """Эндпоинт GET /messages/{interview_id}/history"""
         url = f"{self.base_url}/messages/{interview_id}/history"
         headers = await self._get_auth_headers(telegram_id)
@@ -168,7 +185,7 @@ class Backend_Client():
                 return await resp.json()
             return []
 
-    async def get_completed_interview_details(self, telegram_id: str):
+    async def get_completed_interview_details(self, telegram_id: int):
         url = f"{self.base_url}/interviews/completed"
         headers = await self._get_auth_headers(telegram_id)
         
@@ -177,7 +194,7 @@ class Backend_Client():
                 return await response.json()
             return []
 
-    async def analyze_resume(self, telegram_id: str, resume_id: str):
+    async def analyze_resume(self, telegram_id: int, resume_id: str):
         url = f"{self.base_url}/resumes/{resume_id}/analyze"
         headers = await self._get_auth_headers(telegram_id)
         
@@ -188,14 +205,14 @@ class Backend_Client():
                 return {"error": "payment_required"}
             return None
 
-    async def delete_resume(self, telegram_id: str, resume_id: str):
+    async def delete_resume(self, telegram_id: int, resume_id: str):
         url = f"{self.base_url}/resumes/{resume_id}"
         headers = await self._get_auth_headers(telegram_id)
         
         async with self.session.delete(url, headers=headers) as response:
             return response.status in [200, 204]
 
-    async def delete_interview(self, telegram_id: str, interview_id: str):
+    async def delete_interview(self, telegram_id: int, interview_id: str):
         url = f"{self.base_url}/interviews/{interview_id}"
         headers = await self._get_auth_headers(telegram_id)
         

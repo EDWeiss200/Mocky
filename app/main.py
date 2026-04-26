@@ -7,6 +7,7 @@ from handlers import router
 from api_client import Backend_Client
 from aiogram.fsm.storage.redis import RedisStorage
 from redis.asyncio import Redis
+from middlewares.session import SessionUpdateMiddleware
 
 
 logging.basicConfig(level=logging.INFO)
@@ -27,6 +28,8 @@ async def main():
     
     api = Backend_Client(base_url=config.BACKEND_URL, redis_client = redis_cookie)
     
+    dp.update.outer_middleware(SessionUpdateMiddleware())
+
     dp.include_router(router)
 
     await bot.delete_webhook(drop_pending_updates=True)
