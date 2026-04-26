@@ -69,13 +69,13 @@ class Resume(Base):
     __tablename__ = "resumes"
     id: Mapped[uuidpk]
     name: Mapped[str | None] = mapped_column(Text)
-    user_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("users.id"))
+    user_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("users.id",ondelete="CASCADE"))
     raw_text: Mapped[str] = mapped_column(Text)
     created_at: Mapped[datetime] = mapped_column(
     default=lambda: datetime.now(msk_tz).replace(tzinfo=None)
     )   
     user: Mapped["User"] = relationship(back_populates="resumes")
-    interviews: Mapped[List["Interview"]] = relationship(back_populates="resume")
+    interviews: Mapped[List["Interview"]] = relationship(back_populates="resume",cascade="all, delete-orphan")
 
     def __str__(self):
         return f"Резюме {self.name}   {self.id}"
@@ -83,7 +83,7 @@ class Resume(Base):
 class Interview(Base):
     __tablename__ = "interviews"
     id: Mapped[uuidpk]
-    user_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("users.id"))
+    user_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("users.id",ondelete="CASCADE"))
     resume_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("resumes.id", ondelete="CASCADE"))
     vacancy_context: Mapped[str | None] = mapped_column(Text, nullable=True)
     role: Mapped[str] = mapped_column(String, default="pragmatic_lead")
@@ -107,7 +107,7 @@ class Interview(Base):
 class Message(Base):
     __tablename__ = "messages"
     id: Mapped[uuidpk]
-    interview_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("interviews.id"))
+    interview_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("interviews.id",ondelete="CASCADE"))
     role: Mapped[MessageRole] = mapped_column()
     content: Mapped[str] = mapped_column()
     created_at: Mapped[datetime] = mapped_column(

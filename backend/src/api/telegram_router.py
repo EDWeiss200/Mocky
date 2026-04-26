@@ -33,17 +33,22 @@ async def login(
 
     if not user:
 
-        mock_email = f"tg_{data.telegram_id}@mocky.com"
-        mock_password = str(uuid.uuid4()) # Супер-сложный случайный пароль
+        unique_suffix = str(uuid.uuid4())[:8] 
+        mock_email = f"tg_{data.telegram_id}_{unique_suffix}@mocky.com"
+        mock_password = str(uuid.uuid4()) 
         
         user_create = UserCreate(
             email=mock_email,
             password=mock_password,
             username=data.username,
-            telegram_id=data.telegram_id
+            
         )
 
+
         user = await user_manager.create(user_create)
+        
+        # И сразу же обновляем ему telegram_id через твой сервис
+        await user_service.update_telegram_id(user.id, data.telegram_id)
 
     response = await auth_backend.login(strategy, user)
  
