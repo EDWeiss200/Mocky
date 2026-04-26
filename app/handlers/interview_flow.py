@@ -142,7 +142,7 @@ async def cmd_prepare_interview(message: types.Message, state: FSMContext, api):
     async with ChatActionSender.typing(bot=message.bot, chat_id=message.chat.id):
         try:
             interview_data = await api.start_interview(message.from_user.id, resume_id, q_count, role)
-        except Exception as e:
+        except Exception:
             return await message.answer("❌ <b>Ошибка связи с сервером.</b> Попробуйте позже.", parse_mode="HTML")
     
     if interview_data:
