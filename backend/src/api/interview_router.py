@@ -26,17 +26,6 @@ router = APIRouter(
 
 
 
-@router.get('/{interview_id}')
-async def get_interview(
-    interview_id: UUID,
-    user: User = Depends(current_user),
-    interview_service: InterviewServices = Depends(interview_service)
-):
-    interview_id = await interview_service.get_interview(interview_id)
-
-    return interview_id
-
-
 
 
 @router.post('/start')
@@ -432,3 +421,15 @@ async def delete_interview(
     interview_id = await interview_service.delete_interview(interview_id)
 
     return interview_id
+
+
+@router.get('/{interview_id}')
+async def get_interview(
+    interview_id: UUID,
+    user: User = Depends(current_user),
+    interview_service: InterviewServices = Depends(interview_service)
+):
+    interview_id = await interview_service.get_interview(interview_id)
+
+    return interview_id
+
