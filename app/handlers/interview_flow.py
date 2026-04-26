@@ -228,11 +228,25 @@ async def handle_resume_choice(callback: types.CallbackQuery, state: FSMContext,
     await start_actual_interview(callback.message, state, api, resume_id)
 
 
+
 @router.message(InterviewProcess.interviewing, F.text)
 async def handle_interview_answer(message: types.Message, state: FSMContext, api):
-    forbidden_commands = ["🚀 Начать интервью", "📂 Мои резюме", "📊 Мои интервью", "📊 Активные сессии", "❓ Помощь"]
+    forbidden_commands = [
+        "🚀 Начать интервью", "📂 Мои резюме", "📊 Мои интервью", 
+        "📊 Активные сессии", "❓ Помощь", "⏸ Поставить на паузу"
+    ]
+    
     if message.text in forbidden_commands:
-        return await message.answer("⚠️ Сначала завершите текущее интервью.")
+        if message.text == "⏸ Поставить на паузу":
+            await state.set_state(None) 
+            return await message.answer(
+                "⏸ <b>Интервью приостановлено.</b>\n\n"
+                "Вы вернулись в главное меню. Чтобы продолжить, выберите эту сессию в разделе «📊 Активные сессии».",
+                parse_mode="HTML",
+                reply_markup=get_main_menu(is_interviewing=False)
+            )
+        else:
+            return await message.answer("⚠️ Сначала завершите или приостановите текущее интервью.")
 
     user_data = await state.get_data()
     interview_id = user_data.get("interview_id")
