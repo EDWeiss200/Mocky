@@ -12,8 +12,8 @@ class VerifyBalance:
     async def __call__(self,user: User = Depends(current_user)):
 
         now = datetime.now(timezone.utc)
-        has_sprint = user.subscription_tier == "sprint" and user.subscription_expires_at and user.subscription_expires_at.replace(tzinfo=timezone.utc) > now
-        has_pro = user.subscription_tier == "pro" and user.subscription_expires_at and user.subscription_expires_at.replace(tzinfo=timezone.utc) > now
+        has_sprint = user.subscription_tier == "sprint" and user.subscription_expiries_at and user.subscription_expiries_at.replace(tzinfo=timezone.utc) > now
+        has_pro = user.subscription_tier == "pro" and user.subscription_expires_at and user.subscription_expiries_at.replace(tzinfo=timezone.utc) > now
 
         if has_pro:
             return user

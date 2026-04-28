@@ -15,7 +15,7 @@ from httpx_oauth.clients.github import GitHubOAuth2
 
 cookie_transport = CookieTransport(
     cookie_name="mocky-cookie",
-    cookie_max_age=28800,
+    cookie_max_age=604800,
     cookie_secure=False,
     cookie_samesite='lax'
 )
@@ -25,7 +25,7 @@ cookie_transport = CookieTransport(
 SECRET = SECRET_AUTH
 
 def get_jwt_strategy() -> JWTStrategy:
-    return JWTStrategy(secret=SECRET, lifetime_seconds=3600)
+    return JWTStrategy(secret=SECRET, lifetime_seconds=604800)
 
 
 auth_backend = AuthenticationBackend(
