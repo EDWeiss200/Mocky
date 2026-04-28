@@ -126,8 +126,8 @@ class UserServices:
 
     async def charge_for_feature(self, user: User, feature: Feature):
         now = datetime.now(timezone.utc)
-        is_pro = user.subscription_tier == "pro" and user.subscription_expires_at and user.subscription_expires_at.replace(tzinfo=timezone.utc) > now
-        is_sprint = user.subscription_tier == "sprint" and user.subscription_expires_at and user.subscription_expires_at.replace(tzinfo=timezone.utc) > now
+        is_pro = user.subscription_tier == "pro" and user.subscription_expiries_at and user.subscription_expiries_at.replace(tzinfo=timezone.utc) > now
+        is_sprint = user.subscription_tier == "sprint" and user.subscription_expiries_at and user.subscription_expiries_at.replace(tzinfo=timezone.utc) > now
 
         if is_pro:
             return 
