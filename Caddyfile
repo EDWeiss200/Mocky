@@ -1,5 +1,5 @@
 mock-y.ru {
-    handle_path /api/* {
+    handle_path /api* {
         reverse_proxy backend:8000
     }
 }
