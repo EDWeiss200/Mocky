@@ -52,6 +52,3 @@ password_helper = PasswordHelper(password_hash)
 current_user = fastapi_users.current_user()
 
 
-
-# Инициализируем клиент
-

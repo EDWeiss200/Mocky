@@ -21,7 +21,7 @@ BOT_SECRET_TOKEN = os.environ.get("BOT_SECRET_TOKEN")
 DATABASE_URL_CONFIG = f"postgresql+asyncpg://{DB_USER}:{DB_PASS}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
 
 client = AsyncOpenAI(
-    base_url="https://api.proxyapi.ru/openai/v1", # адрес посредника
+    base_url="https://api.proxyapi.ru/openai/v1", 
     api_key=OPENAI_SECRET_API_KEY,
 )
 
