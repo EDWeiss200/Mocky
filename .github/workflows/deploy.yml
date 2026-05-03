@@ -76,4 +76,4 @@ jobs:
             git pull origin main
             docker compose pull
             docker compose up -d
-            docker compose exec -T caddy caddy reload -c /etc/caddy/Caddyfile
+            docker compose restart caddy
