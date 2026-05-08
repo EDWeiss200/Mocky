@@ -1,9 +1,6 @@
-import time
-import logging
 from typing import Any, Awaitable, Callable, Dict
 from aiogram import BaseMiddleware
 from aiogram.types import TelegramObject, Message, CallbackQuery
-from redis.asyncio import Redis
 
 class SessionUpdateMiddleware(BaseMiddleware):
     async def __call__(
