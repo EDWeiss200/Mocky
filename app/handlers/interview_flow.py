@@ -85,8 +85,8 @@ async def process_questions_count(message: types.Message, state: FSMContext):
     count = int(message.text)
     if count not in ALLOWED_QUESTION_COUNTS:
         return await message.answer(
-            f"⚠️ Допустимые значения: <b>5, 10, 15, 20</b>.\n"
-            f"Пожалуйста, выберите одно из них.",
+            "⚠️ Допустимые значения: <b>5, 10, 15, 20</b>.\n"
+            "Пожалуйста, выберите одно из них.",
             parse_mode="HTML"
         )
 
