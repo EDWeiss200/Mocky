@@ -73,14 +73,23 @@ async def process_role_callback(callback: types.CallbackQuery, state: FSMContext
         parse_mode="HTML"
     )
 
+ALLOWED_QUESTION_COUNTS = {5, 10, 15, 20}
+
 @router.message(InterviewProcess.choosing_questions_count)
 async def process_questions_count(message: types.Message, state: FSMContext):
     if message.text == "🚀 Начать интервью":
-        return await message.answer("⚠️ Сначала укажите количество вопросов, выбрав из списка или введя число.")
-    if not message.text.isdigit():
-        return await message.answer("Пожалуйста, введи число цифрами.")
-    
+        return await message.answer("⚠️ Сначала укажите количество вопросов, выбрав из списка.")
+    if not message.text or not message.text.isdigit():
+        return await message.answer("⚠️ Пожалуйста, выберите количество вопросов из кнопок выше: 5, 10, 15 или 20.")
+
     count = int(message.text)
+    if count not in ALLOWED_QUESTION_COUNTS:
+        return await message.answer(
+            f"⚠️ Допустимые значения: <b>5, 10, 15, 20</b>.\n"
+            f"Пожалуйста, выберите одно из них.",
+            parse_mode="HTML"
+        )
+
     await state.update_data(questions_count=count)
     await state.set_state(InterviewProcess.choosing_role)
     
