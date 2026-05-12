@@ -1,7 +1,11 @@
 import "./Header.css";
 import logoSvg from "../../assets/img/logotip.svg";
 
-const Header = () => {
+
+
+
+const Header = () => { 
+
   return (
     <header className="header">
       <div className="container">
@@ -11,9 +15,9 @@ const Header = () => {
         </div>
 
         <nav className="nav-menu">
-          <a href="#">частые вопросы</a>
-          <a href="#">возможности</a>
-          <a href="#">цены</a>
+          <a href="#questions">частые вопросы</a>
+          <a href="#features">возможности</a>
+          <a href="#prices">цены</a>
           <button className="login-button">ВОЙТИ</button>
         </nav>
       </div>

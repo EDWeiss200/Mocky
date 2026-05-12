@@ -66,7 +66,11 @@
   /* белая кнопка овал */
   padding: 11px 30px; 
   border-radius: 80px;
+  transition: opacity 0.2s;
   gap: 10px;
   border: none;
   cursor: pointer;
+}
+.login-button:hover {
+  opacity: 0.8;
 }

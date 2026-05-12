@@ -1,0 +1,198 @@
+/* Основной контейнер страницы */
+.start-page {
+  background-color: #121212; /* Темный фон из макета */
+  min-height: 100vh;
+  padding: 40px 80px;
+  color: #FFFFFF;
+  font-family: "Plus Jakarta Sans", sans-serif;
+}
+
+/* Шапка с логотипом и профилем */
+.start-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 60px;
+}
+
+.logo-section {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.main-logo-img {
+  width: 80px; 
+  height: auto;
+}
+
+.logo-text {
+  font-size: 64px;
+  font-weight: 700;
+  letter-spacing: -1px;
+}
+
+.logo-img {
+  width: 56px;
+  height: 56px;
+  border-radius: 15px;
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+
+.profile-img:hover {
+  transform: scale(1.05);
+}
+
+/* Сетка карточек */
+.grid-container {
+  display: grid;
+  /* Три колонки по 480px согласно макету */
+  grid-template-columns: repeat(3, 480px);
+  gap: 40px; 
+  justify-content: center;
+}
+
+/* Общие стили карточек */
+.card {
+  background: #1E1E1E;
+  border: 1px solid #333333;
+  border-radius: 30px; /* Скругление из Figma */
+  padding: 40px;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  transition: all 0.3s ease;
+}
+
+.card:hover {
+  border-color: #6c5ce7;
+  background: #252525;
+}
+
+/* Большие боковые карточки */
+.large-card {
+  height: 730px; /* Высота из image_5bad39.jpg */
+  width: 480px;
+  justify-content: space-between;
+}
+
+/* Центральная колонка с маленькими карточками */
+.center-column {
+  display: flex;
+  flex-direction: column;
+  gap: 20px; 
+}
+
+.small-card {
+  height: 230px;
+  justify-content: center;
+  width: 480px;
+  right: 20px;
+}
+
+/* Стилизация текста в карточках */
+.card h2 {
+  font-size: 40px;
+  margin: 20px 0 10px 0;
+  font-weight: 700;
+  font-family: "Plus Jakarta Sans", sans-serif;
+}
+
+.card h3 {
+  font-size: 40px;
+  margin: 20px 0 10px 0;
+  font-weight: 700;
+  font-family: "Plus Jakarta Sans", sans-serif;
+}
+
+.card p {
+  color: #A0A0A0;
+  font-size: 24px;
+  font-family: "Plus Jakarta Sans", sans-serif;
+  font-weight: 700;    
+}
+
+/* Контейнеры для иллюстраций (папок) */
+.image-box {
+  height: 320px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 20px;
+  margin-bottom: 20px;
+}
+
+.card-illustration {
+  width: 240px;
+  height: auto;
+  object-fit: contain;
+}
+
+/* Маленькая папка для архива */
+.mini-card-img {
+  position: absolute;
+  left: 250px;
+  bottom: 50px;
+  width: 300px;
+  height: 180px;
+}
+
+/* Белая кнопка-стрелка */
+.arrow-circle {
+  width: 54px;
+  height: 54px;
+  background: #FFFFFF;
+  color: #000000;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 28px;
+  font-weight: bold;
+  cursor: pointer;
+  align-self: flex-end;
+  text-decoration: none; 
+  display: flex;
+  .arrow-circle {
+  position: absolute;
+
+  pointer-events: auto; /* Гарантируем реакцию на клик */
+}
+}
+
+.small-card .arrow-circle {
+  position: absolute;
+  right: 30px;
+  bottom: 30px;
+  width: 44px;
+  height: 44px;
+}
+.stats {
+  left:70px;
+}
+.start-interview {
+  right: 110px;
+}
+
+.decor-line {
+  position: absolute;
+  top: 200px;
+  left: 40px;
+  width: 500px;
+  pointer-events: none;
+}
+.decor-profile {
+  position: absolute;
+  top: 220px;
+  right: 100px;
+  width: 134px;
+  height: 134px;
+}
+.decor-line-stats {
+  position: absolute;
+  top: 235px; /* Сдвигаем ниже, чтобы не закрывать заголовок */
+  width: 340px; /* Немного уменьшаем ширину */
+  left: 120px;
+}
