@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import './Registration.css';
 
-// Импорты
 import LogoIcon from '../../assets/img/logo.svg';
 import GithubIcon from '../../assets/img/github-icon.svg';
 import WhiteStarsGroup from '../../assets/img/whiteStarsGroup.svg';
@@ -12,6 +11,9 @@ const Registration = () => {
     username: '',
     password: ''
   });
+  
+  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -19,47 +21,79 @@ const Registration = () => {
       ...prev,
       [name]: value
     }));
+    setError('');
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true);
+    setError('');
+    
     try {
-      const response = await fetch('YOUR_BACKEND_URL/api/register', {
+      const response = await fetch('/api/auth/register', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData)
+        headers: { 
+          'Content-Type': 'application/json',
+          'accept': 'application/json'
+        },
+        body: JSON.stringify({
+          email: formData.email,
+          username: formData.username,
+          password: formData.password,
+          is_active: true,
+          is_superuser: false,
+          is_verified: false
+        }),
+        credentials: 'include'
       });
-      const data = await response.json();
-      if (response.ok) {
+      
+      let data = null;
+      const contentType = response.headers.get('content-type');
+      
+      if (contentType && contentType.includes('application/json')) {
+        data = await response.json();
+      }
+      
+      if (response.status === 201) {
         console.log('Registration successful:', data);
+        window.location.href = '/';
+      } else if (response.status === 400) {
+        if (data && data.detail === 'REGISTER_USER_ALREADY_EXISTS') {
+          setError('Пользователь с таким email или именем уже существует');
+        } else {
+          setError('Ошибка регистрации. Проверьте введенные данные.');
+        }
+      } else {
+        setError('Ошибка регистрации. Попробуйте позже.');
       }
     } catch (error) {
       console.error('Error:', error);
+      setError('Не удается подключиться к серверу. Проверьте интернет-соединение.');
+    } finally {
+      setLoading(false);
     }
   };
 
   const handleGitHubLogin = () => {
-    window.location.href = 'YOUR_BACKEND_URL/api/auth/github';
+    window.location.href = '/api/auth/github';
   };
 
   return (
     <div className="register-page">
       <div className="register-container">
-        {/* Фоновое изображение SVG */}
         <div 
           className="white-stars-bg"
           style={{ backgroundImage: `url(${WhiteStarsGroup})` }}
         ></div>
         
-        {/* Контент */}
         <div className="register-content">
-          {/* Логотип */}
           <div className="logo-wrapper">
             <img src={LogoIcon} alt="Mocky Logo" className="logo-image" />
           </div>
 
-          {/* Форма регистрации */}
           <form onSubmit={handleSubmit} className="register-form">
+            {error && <div className="error-message">{error}</div>}
+            
             <div className="input-field">
               <input
                 type="email"
@@ -102,8 +136,8 @@ const Registration = () => {
                 <img src={GithubIcon} alt="GitHub" className="github-icon" />
               </button>
               
-              <button type="submit" className="create-button">
-                создать
+              <button type="submit" className="create-button" disabled={loading}>
+                {loading ? 'Создание...' : 'создать'}
               </button>
             </div>
           </form>
