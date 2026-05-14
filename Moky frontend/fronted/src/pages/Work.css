@@ -1,0 +1,146 @@
+.work-page {
+  background-color: #121212; /* Темный фон как в Figma */
+  min-height: 100vh;
+  color: white;
+  padding: 40px 200px; /* Отступ 200px по бокам */
+  font-family: 'Plus Jakarta Sans', sans-serif;
+}
+
+/* Шапка */
+.work-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 60px;
+}
+
+.logo-section {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.logo-text {
+  font-size: 40px;
+  font-weight: 700;
+}
+
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+/* Заголовок страницы */
+.page-title {
+  text-align: center;
+  font-size: 32px;
+  font-weight: 600;
+  margin-bottom: 50px;
+}
+
+/* Контейнер для карточек */
+.cards-container {
+  display: flex;
+  gap: 40px; /* Промежуток между карточками */
+  justify-content: center;
+}
+
+/* Сама карточка */
+.work-card {
+  width: 480px;  /* Размер из Figma */
+  height: 724px; /* Размер из Figma */
+  background: #1e1e1e; /* Темно-серый градиент или цвет */
+  border-radius: 40px;
+  padding: 40px;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.3s ease;
+}
+
+.work-card:hover {
+  transform: translateY(-10px);
+}
+
+/* Стилизация контента внутри */
+.card-image-wrapper {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.card-main-img {
+  width: 274px; /* Примерный размер из Figma */
+  height: auto;
+}
+
+.card-content h2 {
+  font-size: 40px;
+  line-height: 1.1;
+  margin-bottom: 20px;
+  font-family: "Plus Jakarta Sans", sans-serif;
+  font-weight: 700;
+}
+
+.card-content p {
+  font-size: 24px;
+  color: #b0b0b0;
+  line-height: 1.5;
+  margin-bottom: 30px;
+  font-family: "Plus Jakarta Sans", sans-serif;
+  font-weight: 700;
+}
+
+/* Кнопки в футере карточек */
+.card-footer {
+  display: flex;
+  align-items: center;
+
+}
+
+.footer-right {
+  justify-content: flex-end;
+}
+
+.action-btn {
+  background: white;
+  color: black;
+  border: none;
+  border-radius: 50px;
+  padding: 12px 24px;
+  font-size: 18px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  cursor: pointer;
+}
+
+.action-btn span {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: black;
+  color: white;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  font-size: 20px;
+}
+
+.arrow-btn {
+  background: white;
+  color: black;
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 24px;
+  font-weight: bold;
+  cursor: pointer;
+}

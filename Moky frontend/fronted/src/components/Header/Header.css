@@ -1,0 +1,76 @@
+.logo-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 12px;           /* Расстояние между звездой и текстом */
+}
+
+.header-logo {
+    /* звездочка лого */
+  width: 74px;
+  height: 77px;
+  top: 100px;
+  left: 200px;
+  gap: 15px;
+}
+
+.logo-text {
+  font-family: "Plus Jakarta Sans", sans-serif;
+  color: #FDFEF9;
+  font-size: 64px;
+  font-weight: 700;
+  line-height: 100px;
+  word-wrap: break-word;
+
+}
+
+.container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 74px 200px; 
+  padding-bottom: 29px;  /*  отступ от левого края экрана */
+  max-width: 100%;      /*   максимально слева */
+}
+
+.nav-menu {
+  display: flex;
+  align-items: center;
+  gap: 50px;  
+  margin-left: 200px;  
+}
+
+.nav-menu a {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-weight: 700;
+  font-size: 24px;
+  line-height: 100px;
+  color: #FFFFFF;
+  text-decoration: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  white-space: nowrap; /* Чтобы текст не переносился */
+}
+
+.login-button {
+  background-color: #FFFFFF;
+  color: #000000;
+  
+  /* размеры текста внутри кнопки */
+  font-size: 24px;
+  line-height: 25px;
+  width: 140px;
+  font-weight: 700;
+  text-transform: lowercase;
+  
+  /* белая кнопка овал */
+  padding: 11px 30px; 
+  border-radius: 80px;
+  transition: opacity 0.2s;
+  gap: 10px;
+  border: none;
+  cursor: pointer;
+}
+.login-button:hover {
+  opacity: 0.8;
+}

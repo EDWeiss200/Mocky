@@ -1,0 +1,257 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+.authorization-page {
+  width: 100%;
+  min-height: 100vh;
+  background: #2c2c2c;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Фиолетовый круг - снизу слева */
+.authorization-page::before {
+  content: '';
+  position: absolute;
+  bottom: -150px;
+  left: -20px;
+  width: 600px;
+  height: 600px;
+  background: radial-gradient(circle, rgba(156, 90, 213, 1) 0%, rgba(156, 90, 213, 0.8) 30%, rgba(156, 90, 213, 0) 70%);
+  border-radius: 50%;
+  filter: blur(60px);
+  z-index: 0;
+  pointer-events: none;
+}
+
+/* Желтый круг - сверху справа */
+.authorization-page::after {
+  content: '';
+  position: absolute;
+  top: -150px;
+  right: -20px;
+  width: 600px;
+  height: 600px;
+  background: radial-gradient(circle, rgb(238, 250, 64) 0%, rgba(238, 250, 64) 30%, rgba(255, 220, 50, 0) 70%);
+  border-radius: 50%;
+  filter: blur(60px);
+  z-index: 0;
+  pointer-events: none;
+}
+
+.authorization-container {
+  width: 760px;
+  max-width: 90%;
+  background: black;
+  border-radius: 32px;
+  box-shadow: 0px 25px 50px -12px rgba(0, 0, 0, 0.25);
+  position: relative;
+  overflow: hidden;
+  min-height: 500px;
+  display: flex;
+  align-items: center;
+  z-index: 10;
+}
+
+/* Фоновое изображение SVG */
+.white-stars-bg {
+  position: absolute;
+  right: 5px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 420px;
+  height: 420px;
+  background-size: contain;
+  background-position: center;
+  background-repeat: no-repeat;
+  z-index: 0;
+}
+
+/* Контент - занимает левую половину */
+.authorization-content {
+  position: relative;
+  z-index: 1;
+  width: 50%;
+  padding: 48px 40px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  min-height: 500px;
+}
+
+/* Логотип */
+.logo-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.logo-image {
+  width: 210px;
+  height: 100px;
+  object-fit: contain;
+}
+
+/* Форма */
+.authorization-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  flex: 1;
+}
+
+/* Поля ввода */
+.input-field {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.input-field input {
+  width: 100%;
+  padding: 14px 16px;
+  font-size: 16px;
+  font-family: inherit;
+  background: #323232;
+  border: 1.5px solid #323232;
+  border-radius: 16px;
+  outline: none;
+  transition: all 0.2s ease;
+  color: white;
+  box-sizing: border-box;
+}
+
+.input-field input::placeholder {
+  color: #c3c5d8;
+  font-weight: 400;
+}
+
+.input-field input:focus {
+  border-color: #667eea;
+  box-shadow: 0px 0px 0px 4px rgba(102, 126, 234, 0.1);
+}
+
+/* Забыли пароль? - центрировано */
+.forgot-password {
+  text-align: center;
+  margin-top: -4px;
+}
+
+.forgot-password-btn {
+  background: none;
+  border: none;
+  color: #888;
+  font-size: 13px;
+  cursor: pointer;
+  transition: color 0.2s ease;
+}
+
+.forgot-password-btn:hover {
+  color: #667eea;
+  text-decoration: underline;
+}
+
+.buttons-row {
+  display: flex;
+  gap: 12px;
+  margin-top: 8px;
+}
+
+.github-button {
+  flex: 1;
+  max-width: calc(50% - 6px);
+  height: 38px;
+  background: #1A202C;
+  border: none;
+  border-radius: 40px;
+  cursor: pointer;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  overflow: visible;
+}
+
+.github-button:hover {
+  background: #2D3748;
+  transform: translateY(-2px);
+}
+
+.github-icon {
+  width: auto;
+  height: 38px;
+  object-fit: contain;
+  display: block;
+  border-radius: 40px;
+}
+
+/* Кнопка входа - меньшего размера */
+.login-button {
+  flex: 1;
+  max-width: calc(50% - 6px);
+  height: 38px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+  border-radius: 40px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+}
+
+.login-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0px 10px 20px -5px rgba(102, 126, 234, 0.4);
+}
+
+.login-button:disabled,
+.github-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* Создать аккаунт - на одном уровне с нижним краем картинки */
+.create-account {
+  text-align: center;
+  margin-top: auto;
+  padding-top: 20px;
+}
+
+.create-account-btn {
+  background: none;
+  border: none;
+  color: white;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.create-account-btn:hover {
+  color: #667eea;
+  text-decoration: underline;
+}
+
+/* Сообщение об ошибке */
+.error-message {
+  background: rgba(220, 53, 69, 0.15);
+  border: 1px solid #dc3545;
+  border-radius: 12px;
+  padding: 10px;
+  margin-bottom: 10px;
+  color: #ff6b6b;
+  font-size: 14px;
+  text-align: center;
+}

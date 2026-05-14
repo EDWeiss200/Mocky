@@ -1,0 +1,822 @@
+.section-wrapper {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+.hero {
+  position: relative;
+  line-height: 778.39px;
+  rotate: -28.9px;
+  left: 741px;
+  width: 897.6; /* Высота всей секции */
+  display: flex;
+  align-items: center;
+  overflow: hidden; /* Чтобы звезды не создавали горизонтальный скролл */
+}
+
+.hero-content {
+  z-index: 2; /* Чтобы текст всегда был поверх фона */
+}
+
+.hero-stars {
+  position: absolute;
+
+  transform: translateY(-42%);
+  z-index: 1;
+  left: 750px;
+  pointer-events: none;
+}
+.hero-title {
+  position: relative;
+  font-family: "Plus Jakarta Sans", sans-serif;
+  color: #ffffff;  font-size: 64px;
+  font-weight: 700;
+  line-height: 130%;
+  width: 753px;
+  margin: 0;
+  gap: 119px;
+  margin: 0 0 20px 0;
+}
+
+.hero-subtitle {
+  font-family: "Plus Jakarta Sans", sans-serif;
+  color: #bebebe;
+  font-weight: 700;
+  letter-spacing: 0%;
+  font-size: 24px;
+  margin-bottom: 50px;
+  margin-top: 50px;
+}
+
+/* кнопка начать бесплатно*/
+.btn-hero_startfree {
+  background-color: #5f47e7;
+  color: #ffffff;
+  font-family: "Plus Jakarta Sans", sans-serif;
+
+  /* размеры текста внутри кнопки */
+  font-size: 24px;
+  font-weight: 700;
+  width: 265px;
+  height: 68px;
+  padding: 11px 10px;
+  border-radius: 74px;
+  gap: 10px;
+  border: none;
+  cursor: pointer;
+  white-space: nowrap;
+  /* анимка */
+  transition: transform 0.2s ease-in-out;
+  will-change: transform;
+}
+
+.btn-hero_startfree:hover {
+  background-color: #5f47e7; 
+  transform: scale(1.02); 
+}
+.btn-hero_startfree:active {
+  transform: scale(0.98);
+}
+
+
+.feature-block {
+  margin-top: 250px; 
+  margin-left: 100px; 
+  width: 1720px;
+  height: 720px; 
+  background-color: #1b1b1b;
+  border-radius: 50px;  
+  box-sizing: border-box;
+}
+
+.feature-title{
+  font-family: "Plus Jakarta Sans", sans-serif;
+  size: 64px;
+  margin-top: 80px;
+  margin-left: 100px;
+  font-weight: 700;
+  font-size: 64px;
+  color: #ffffff;
+}
+.feature-cards {
+  display: flex;          
+  flex-direction: row;   
+  gap: 50px;              
+  margin-top: 60px;      
+  width: 100%;      
+}
+
+.first-step-number {
+  width: 90px;
+  height: 51.27px;
+  
+  /* Фон и скругление */
+  background-color: #ffffff;
+  border-radius: 50px;
+  
+  /* Центрируем цифру внутри овала */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  
+  /* Стили текста цифры */
+  color: #000000;
+  font-family: "Plus Jakarta Sans", sans-serif;
+  font-weight: 800;
+  font-size: 40px;
+  
+
+  margin-bottom: 30px;
+  
+  /* Чтобы овал не сжимался, если текста будет много */
+  flex-shrink: 0;
+}
+.first-step-card {
+  /* Размеры из Figma */
+  width: 480px;
+  height: 420px;
+  border-radius: 30px;
+  
+  /* Внутренние отступы */
+  padding: 40px;
+  box-sizing: border-box;
+  flex-shrink: 0;
+  background-color: #2c2727;
+  display: flex;
+  flex-direction: column;
+  margin-left: 90px;
+}
+.first-step-title {
+  font-family: "Plus Jakarta Sans", sans-serif;
+  color: #ffffff;
+  font-size: 40px;
+  font-weight: 700;
+  margin-top: auto;
+
+}
+.first-step-description {
+  font-family: "Plus Jakarta Sans", sans-serif;
+  color: #BEBEBE; /* Серый текст как в макете */
+  font-size: 18px;
+  font-weight: 700;
+  margin-top: auto;
+}
+
+.second-step-number {
+  width: 90px;
+  height: 51.27px;
+  
+  /* Фон и скругление */
+  background-color: #ffffff;
+  border-radius: 50px;
+  
+  /* Центрируем цифру внутри овала */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  
+  /* Стили текста цифры */
+  color: #000000;
+  font-family: "Plus Jakarta Sans", sans-serif;
+  font-weight: 800;
+  font-size: 40px;
+  
+
+  margin-bottom: 30px;
+  
+  /* Чтобы овал не сжимался, если текста будет много */
+  flex-shrink: 0;
+}
+
+.second-step-card {
+  /* Размеры из Figma */
+  width: 480px;
+  height: 420px;
+  border-radius: 30px;
+  
+  /* Внутренние отступы */
+  padding: 40px;
+  box-sizing: border-box;
+  flex-shrink: 0;
+  background-color: #2c2727;
+  display: flex;
+  flex-direction: column;
+}
+.second-step-title {
+  font-family: "Plus Jakarta Sans", sans-serif;
+  color: #ffffff;
+  font-size: 40px;
+  font-weight: 700;
+  margin-top: auto;
+
+}
+.second-step-description {
+  font-family: "Plus Jakarta Sans", sans-serif;
+  color: #BEBEBE; /* Серый текст как в макете */
+  font-size: 18px;
+  font-weight: 700;
+  margin-top: auto;
+}
+.third-step-number {
+  width: 90px;
+  height: 51.27px;
+  
+  /* Фон и скругление */
+  background-color: #ffffff;
+  border-radius: 50px;
+  
+  /* Центрируем цифру внутри овала */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  
+  /* Стили текста цифры */
+  color: #000000;
+  font-family: "Plus Jakarta Sans", sans-serif;
+  font-weight: 800;
+  font-size: 40px;
+  
+
+  margin-bottom: 30px;
+  
+  /* Чтобы овал не сжимался, если текста будет много */
+  flex-shrink: 0;
+}
+
+.third-step-card {
+  /* Размеры из Figma */
+  width: 480px;
+  height: 420px;
+  border-radius: 30px;
+  
+  /* Внутренние отступы */
+  padding: 40px;
+  box-sizing: border-box;
+  flex-shrink: 0;
+  background-color: #2c2727;
+  display: flex;
+  flex-direction: column;
+}
+.third-step-title {
+  font-family: "Plus Jakarta Sans", sans-serif;
+  color: #ffffff;
+  font-size: 40px;
+  font-weight: 700;
+  margin-top: auto;
+
+}
+.third-step-description {
+  font-family: "Plus Jakarta Sans", sans-serif;
+  color: #BEBEBE; /* Серый текст как в макете */
+  font-size: 18px;
+  font-weight: 700;
+  margin-top: auto;
+}
+
+/* 3. ОБЩИЙ КОНТЕЙНЕР ДЛЯ РЯДА (ЧАТ + ТЕКСТ) */
+.main-interactive-container {
+  display: flex;
+  justify-content: flex-start;
+  align-items: flex-start;
+  margin-left: 200px; /* Единый отступ слева для всей секции */
+  gap: 100px;         /* Точное расстояние между чатом и карточками */
+  margin-top: 100px;
+  margin-bottom: 150px;
+  box-sizing: border-box;
+}
+
+/* ОБЕРТКА ДЛЯ ЧАТА И ТОЧЕК ПОД НИМ */
+.chat-visual-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center; /* Центрируем точки под карточкой чата */
+}
+
+.ai-chat-card {
+  width: 832px;
+  height: 600px;
+  background-color: #1b1b1b;
+  border-radius: 50px;
+  padding: 50px 60px;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  box-sizing: border-box;
+  /* margin-left удален, так как есть у родителя */
+}
+
+/* Правая сторона чата (Пользователь) */
+.user-side {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  margin-bottom: 30px;
+}
+
+.resume-label {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 168px;
+  height: 70px;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 20px;
+  justify-content: center;
+  margin-bottom: 12px;
+}
+
+.resume-label span {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 20px;
+  color: #BEBEBE;
+  font-weight: 700;
+}
+
+.pdf-svg-icon {
+  width: 35.53px;
+  height: 40.5px;
+}
+
+.mock-user-text {
+  color: #BEBEBE;
+  font-size: 20px;
+  font-weight: 700;
+  margin: 0;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+}
+
+/* Левая сторона чата (Ответ ИИ) */
+.ai-side {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.ai-label {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 15px;
+}
+
+.ai-label h4 {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 24px;
+  color: #FFFFFF;
+  font-weight: 700;
+  margin: 0;
+}
+
+.mock-ai-text {
+  width: 504px;
+  color: #BEBEBE;
+  font-size: 20px;
+  font-weight: 700;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+}
+
+/* Поле ввода (Инпут) */
+.mock-input-field {
+  width: 632px;
+  height: 60px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 100px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 25px;
+  position: absolute;
+  bottom: 50px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-family: 'Plus Jakarta Sans', sans-serif;
+}
+
+.mock-input-field span {
+  color: #FFFFFF;
+  font-size: 20px;
+  font-weight: 700;
+}
+
+.send-svg {
+  width: 20px;
+  height: 20px;
+}
+
+/* Точки под чатом */
+.chat-pagination {
+  display: flex;
+  justify-content: center;
+  gap: 7px;
+  margin-top: 15px;
+  width: 100%; /* Занимает ширину родительской обертки (832px) */
+}
+
+.pj-dot {
+  width: 9px;
+  height: 9px;
+}
+
+/* ПРАВАЯ ИНФОРМАЦИОННАЯ ЧАСТЬ */
+.training-info-right {
+  max-width: 600px;
+  display: flex;
+  flex-direction: column;
+}
+
+.training-title {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-weight: 700;
+  font-size: 64px;
+  line-height: 1.1;
+  color: #FFFFFF;
+  margin-bottom: 24px;
+}
+
+.training-subtitle {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-weight: 700;
+  font-size: 24px;
+  color: #BEBEBE;
+  margin-bottom: 48px;
+}
+
+/* Маленькие карточки */
+.mini-cards-row {
+  display: flex;
+  gap: 20px;
+}
+
+.mini-card {
+  width: 280px;
+  height: 250px;
+  background: #1A1A1A;
+  border-radius: 30px;
+  padding: 30px;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+}
+
+
+
+.mini-card-title {
+  color: #FFFFFF;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-weight: 700;
+  font-size: 24px;
+  margin-bottom: 12px;
+  text-transform: none; /* Заголовок не будет капсом */
+  margin-top: 1px;
+}
+
+.mini-card-text {
+  font-size: 16px;
+  line-height: 1.4;
+  color: #BEBEBE;
+  margin: 0;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-weight: 700;
+}
+
+
+/* --- СЕКЦИЯ ТАРИФОВ (ОБЩЕЕ) --- */
+.plans-section {
+  padding: 100px 0;
+  width: 100%;
+  /* Убираем центрирование через flex, чтобы margin-left работал от края экрана */
+  display: block; 
+}
+
+.plans-section .container {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.plans-main-title {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-weight: 700;
+  font-size: 64px;
+  line-height: 1.1;
+  color: #FFFFFF;
+  margin-bottom: 80px;
+  /* Четкий отступ от границы экрана */
+  margin-left: 200px; 
+  text-align: left;
+}
+
+/* --- КОНТЕЙНЕР ДЛЯ КАРТОЧЕК (РЯД) --- */
+.plans-cards-container {
+  display: flex;
+  flex-direction: row; 
+  /* Выравниваем начало ряда карточек по той же линии 200px */
+  padding-left: 200px; 
+  gap: 30px;
+  margin-bottom: 90px;
+  box-sizing: border-box;
+}
+
+/* --- СТИЛЬ КАРТОЧКИ --- */
+.plan-card {
+  /* Если 3 карточки по 480px не влезают, уменьши это значение до 400px-440px */
+  width: 440px; 
+  height: 500px;
+  background: #1A1A1A;
+  border-radius: 40px;
+  padding: 50px 40px;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.plan-tag {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-weight: 700;
+  font-size: 64px;
+  color: #FFFFFF;
+  margin: 0;
+  text-transform: lowercase;
+}
+
+.plan-subtitle {
+   font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 20px;
+  font-weight: 700;
+  color: #FFFFFF;
+  margin: 10px 0 30px 0;
+  line-height: 1.2;
+}
+
+.plan-smart-text {
+   font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 16px;
+  color: #BEBEBE;
+  line-height: 1.4;
+  font-weight: 700;
+}
+
+.price-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.price-value {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-weight: 700;
+  font-size: 32px;
+  color: #FFFFFF;
+}
+
+/* --- КНОПКА ПЕРЕЙТИ --- */
+.plan-btn-go {
+  width: 163px;
+  height: 49px;
+  background: #FFFFFF;
+  border-radius: 58px;
+  border: none;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-weight: 700;
+  font-size: 24px;
+  color: #000000;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+
+.plan-btn-go:hover {
+  opacity: 0.8;
+}
+
+/* --- ФУТЕР СЕКЦИИ --- */
+.plans-footer-text {
+  width: 100%;            
+  text-align: center;       
+  flex-direction: column;   
+  align-items: center;      
+  margin-top: 50px;         
+
+}
+
+.get-premium {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-weight: 700;
+  font-size: 36px;         
+  color: #FFFFFF;
+  margin-bottom: 10px;     
+}
+
+
+.smart-text-footer {
+  font-family: 'Plus Jakarta Sans', sans-serif; 
+  font-size: 36px;          
+  color: #BEBEBE;       
+  line-height: 1.4;        
+  font-weight: 700;        
+  margin: 0;               
+}
+
+
+/* --- СЕКЦИЯ ВОПРОСОВ (ФИНАЛ) --- */
+
+.faq-interactive-section {
+  padding-bottom: 150px;
+  width: 100%;
+}
+
+.faq-main-title {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-weight: 700;
+  font-size: 64px;
+  color: #FFFFFF;
+  margin-left: 633px;
+  margin-bottom: 80px; 
+}
+
+.faq-content-container {
+  display: flex;
+  margin-left: 200px;
+  gap: 150px;
+  position: relative;
+}
+
+/* Обертка для каждой пары "Стрелка + Кнопка" */
+.faq-nav-wrapper {
+  position: relative;
+  display: flex;
+  align-items: flex-start; 
+  margin-bottom: 40px;     
+}
+
+/* Контейнер стрелки */
+.faq-arrow-indicator {
+  position: absolute;
+  left: -60px;             
+  top: 6px;               
+  opacity: 0;             
+  transform: translateX(-10px);
+  transition: all 0.3s ease;
+  pointer-events: none;
+}
+
+/* Показываем стрелку только когда родительский wrapper активен */
+.faq-arrow-indicator.active {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+.faq-arrow-svg {
+  width: 24px;
+  height: auto;
+  margin-right: 36px;     
+}
+
+/* Сами кнопки */
+.faq-nav-item {
+  background: none;
+  border: none;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-weight: 700;
+  font-size: 32px;
+  line-height: 1.2;        
+  color: #4D4D4D;
+  text-align: left;
+  cursor: pointer;
+  padding: 0;
+  transition: color 0.3s ease;
+  max-width: 500px;        
+}
+
+.faq-nav-item.active {
+  color: #FFFFFF;
+}
+
+/* Правая карточка */
+.faq-display-card {
+  width: 900px;         
+  height: 620px;       
+  background: #1A1A1A;
+  border-radius: 40px; 
+  padding: 60px;        /* Внутренние отступы */
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  
+  /* Если карточка должна плавно менять контент */
+  transition: all 0.5s ease; 
+}
+
+.faq-display-title {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-weight: 700;
+  font-size: 40px;      
+  color: #FFFFFF;
+  margin-bottom: 24px;
+}
+
+.faq-display-description {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 32px;
+  line-height: 1.5;
+  font-weight: 700;
+  color: #BEBEBE;
+  margin-top: 76px;
+}
+
+/* ФИНАЛЬНЫЙ БЛОК */
+.final-cta-section {
+  position: relative;
+  padding-top: 364px; /* Тот самый отступ от карточки вопросов */
+  padding-bottom: 200px;
+  text-align: center;
+  overflow: hidden; /* Чтобы звезды не создавали скролл */
+}
+
+.cta-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  z-index: 10;
+  position: relative;
+}
+
+.cta-title {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-weight: 700;
+  font-size: 64px; /* Делаем заголовок крупным и акцентным */
+  color: #FFFFFF;
+  margin-bottom: 24px;
+  line-height: 1.1;
+}
+
+.cta-subtitle {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 24px;
+  color: #BEBEBE;
+  margin-bottom: 48px;
+  font-weight: 700;
+}
+
+/* КНОПКА */
+.cta-btn-start {
+  width: 383px;          /* Точная ширина из макета */
+  height: 77px;
+  padding: 24px 60px;
+  background: #7B61FF;
+  color: #FFFFFF;
+  border: none;
+  border-radius: 100px;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-weight: 700;
+  font-size: 24px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-weight: 700;
+}
+
+.cta-btn-start:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 30px rgba(123, 97, 255, 0.4);
+  background: #8e77ff;
+}
+
+/* ЗВЕЗДЫ */
+.cta-star {
+  position: absolute;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.star-1 {
+  width: 80px;
+  top: 420px;   
+  left: auto;     
+  right: 78%;
+}
+
+.star-2 {
+  width: 120px;
+  top: 450px;
+  right: 12%;
+}
+
+.star-3 {
+  width: 60px;
+  bottom: 250px;
+  right: 25%;
+  opacity: 0.7;
+}
+
+/* Анимация левитации для звезд */
+@keyframes float {
+  0% { transform: translateY(0px); }
+  50% { transform: translateY(-20px); }
+  100% { transform: translateY(0px); }
+}
+
+.cta-star {
+  animation: float 6s ease-in-out infinite;
+}
